@@ -292,6 +292,16 @@ exports.delete = async (req, res) => {
   }
 };
 
+/**
+ * Agregar un amigo al usuario autenticado (requiere autenticación).
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} req.body - El cuerpo de la solicitud.
+ * @param {string} req.body.email - El correo del amigo que se desea agregar.
+ * @param {string} req.body.name - El nombre del amigo que se desea agregar.
+ * @param {Object} req.user - El usuario autenticado decodificado del token.
+ * @param {string} req.user.userId - El ID del usuario autenticado.
+ * @param {Object} res - La respuesta HTTP.
+ */
 exports.addFriend = async (req, res) => {
   const { email, name } = req.body;
 
@@ -302,13 +312,20 @@ exports.addFriend = async (req, res) => {
       return res.status(404).json({ message: "Amigo no encontrado" });
     }
 
-    // Verificar si el amigo ya está en la lista de amigos
+    // Buscar al usuario autenticado por el userId del token
     const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Usuario autenticado no encontrado" });
+    }
+
+    // Verificar si el amigo ya está en la lista de amigos
     if (user.friends.includes(friend._id)) {
       return res.status(400).json({ message: "Ya eres amigo de este usuario" });
     }
 
-    // Agregar al amigo a la lista de amigos del usuario
+    // Agregar al amigo a la lista de amigos del usuario autenticado
     user.friends.push(friend._id);
 
     // Guardar el usuario actualizado
