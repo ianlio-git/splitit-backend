@@ -1,4 +1,3 @@
-// models/user.model.js
 const mongoose = require("mongoose");
 
 // Definimos el esquema del usuario
@@ -21,11 +20,22 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false, // El apellido no es obligatorio
     },
+    photo: {
+      type: String,
+      required: false, // La foto no es obligatoria
+    },
     projects: [
       {
         type: mongoose.Schema.Types.ObjectId, // Referencia a otros documentos
         ref: "Project", // Asumimos que hay un modelo 'Project' que se relaciona
         required: false, // Los proyectos no son obligatorios
+      },
+    ],
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId, // Referencia a otros usuarios
+        ref: "User", // Relación con el modelo de usuario
+        required: false, // No es obligatorio tener amigos
       },
     ],
   },

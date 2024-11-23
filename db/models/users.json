@@ -4,7 +4,9 @@
   "password": "1234",
   "name": "Nombre",
   "lastname": "Apellido",
+  "photo": "https://example.com/photo.jpg",
   "projects": [{ "$oid": "67415e297c991b90219c5232" }],
+  "friends": [{ "$oid": "67415ff57c991b90219c5234" }],
   "createdAt": { "$date": { "$numberLong": "1732320000000" } },
   "updatedAt": { "$date": { "$numberLong": "1732320000000" } }
 }
