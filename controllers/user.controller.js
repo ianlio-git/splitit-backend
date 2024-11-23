@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user.model"); // Asegúrate de tener el modelo de usuario
+const User = require("../models/user.model"); // Importa el modelo de usuario
+const Project = require("../models/project.model"); // Importa el modelo de proyecto
+const { ObjectId } = require("mongodb"); // Importa ObjectId de mongodb
 
 /**
  * Envía una respuesta de prueba en formato JSON.
@@ -10,6 +12,7 @@ const User = require("../models/user.model"); // Asegúrate de tener el modelo d
 exports.response = (req, res) => {
   res.json({ message: "Esta es una respuesta en formato JSON" });
 };
+
 //---------------------------------------------
 /**
  * Obtener todos los usuarios de la base de datos.
@@ -33,6 +36,7 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Error al obtener los usuarios" });
   }
 };
+
 //---------------------------------------------
 /**
  * Registrar un nuevo usuario.
@@ -64,6 +68,7 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: "Error al registrar el usuario" });
   }
 };
+
 //---------------------------------------------
 /**
  * Iniciar sesión de usuario.
@@ -113,41 +118,176 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Error al iniciar sesión" });
   }
 };
+
 //---------------------------------------------
-// Ver perfil de usuario (requiere autenticación)
+/**
+ * Obtener el perfil del usuario autenticado.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} req.header - Los encabezados de la solicitud.
+ * @param {string} req.header.x-auth-token - El token de autenticación.
+ * @param {Object} req.user - El usuario decodificado del token.
+ * @param {string} req.user.userId - El ID del usuario.
+ * @param {Object} res - La respuesta HTTP.
+ */
 exports.profile = async (req, res) => {
   try {
-    const user = await User.findById(req.userId); // Asumiendo que auth middleware coloca el userId en la solicitud
+    console.log("Token recibido en la solicitud:", req.header("x-auth-token"));
+    console.log("Token decodificado correctamente:", req.user); // Verifica que req.user no sea undefined
+
+    const user = await User.findById(req.user.userId) // Accede a req.user.userId
+      .select(
+        "email password name lastname photo projects friends createdAt updatedAt"
+      ) // Solo los campos necesarios
+      .populate("projects", "_id") // Traer solo los IDs de los proyectos
+      .populate("friends", "_id"); // Traer solo los IDs de los amigos
+
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    res.status(200).json({ user });
+
+    const userProfile = {
+      _id: { $oid: user._id.toString() },
+      email: user.email,
+      password: user.password,
+      name: user.name,
+      lastname: user.lastname,
+      photo: user.photo || "https://example.com/photo.jpg",
+      projects: user.projects.map((project) => ({
+        $oid: project._id.toString(),
+      })),
+      friends: user.friends.map((friend) => ({
+        $oid: friend._id.toString(),
+      })),
+      createdAt: {
+        $date: { $numberLong: user.createdAt.getTime().toString() },
+      },
+      updatedAt: {
+        $date: { $numberLong: user.updatedAt.getTime().toString() },
+      },
+    };
+
+    res.status(200).json(userProfile);
   } catch (err) {
+    console.error("Error al obtener el perfil:", err);
     res.status(500).json({ message: "Error al obtener el perfil" });
   }
 };
+
 //---------------------------------------------
-// Actualizar datos del usuario (requiere autenticación)
+
+/**
+ * Actualizar datos del usuario (requiere autenticación).
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} req.body - El cuerpo de la solicitud.
+ * @param {string} [req.body.name] - El nuevo nombre del usuario.
+ * @param {string} [req.body.email] - El nuevo correo electrónico del usuario.
+ * @param {string} [req.body.password] - La nueva contraseña del usuario.
+ * @param {string} [req.body.photo] - La nueva foto del usuario.
+ * @param {Object} req.user - El usuario autenticado decodificado del token.
+ * @param {string} req.user.userId - El ID del usuario autenticado.
+ * @param {Object} res - La respuesta HTTP.
+ */
 exports.update = async (req, res) => {
-  const { name, email } = req.body;
+  const { name, email, password, photo } = req.body;
+
+  // Validar que al menos uno de los campos está presente en la solicitud
+  if (!name && !email && !password && !photo) {
+    return res.status(400).json({
+      message: "Debe proporcionar al menos un campo para actualizar.",
+    });
+  }
+
   try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.userId, // Asumiendo que auth middleware coloca el userId en la solicitud
-      { name, email },
-      { new: true }
-    );
-    res.status(200).json(updatedUser);
+    // Log para ver si el token se está recibiendo correctamente
+    console.log("Token decodificado:", req.user);
+
+    // Convertir a ObjectId
+    const userId = new ObjectId(req.user.userId); // Corregido
+
+    // Buscar el usuario en la base de datos
+    const user = await User.findById(userId); // Usar ObjectId en la búsqueda
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Log para ver si el usuario fue encontrado
+    console.log("Usuario encontrado:", user);
+
+    // Si se va a actualizar la contraseña, la hasheamos primero
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    // Verificar si el email ya está en uso
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res
+          .status(400)
+          .json({ message: "El email ya está en uso por otro usuario" });
+      }
+      user.email = email;
+    }
+
+    // Actualizar otros campos
+    if (name) user.name = name;
+    if (photo) user.photo = photo;
+
+    // Guardar el usuario actualizado
+    const updatedUser = await user.save();
+
+    // Log para ver el usuario actualizado
+    console.log("Usuario actualizado:", updatedUser);
+
+    // Responder con el usuario actualizado
+    res.status(200).json({
+      id: updatedUser._id,
+      email: updatedUser.email,
+      name: updatedUser.name,
+      photo: updatedUser.photo,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    });
   } catch (err) {
+    console.error("Error al actualizar el usuario:", err);
     res.status(500).json({ message: "Error al actualizar el usuario" });
   }
 };
+
 //---------------------------------------------
-// Eliminar usuario (requiere autenticación)
+/**
+ * Eliminar la cuenta del usuario autenticado (requiere autenticación).
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} req.body - El cuerpo de la solicitud.
+ * @param {string} req.body.password - La contraseña del usuario para verificar la identidad.
+ * @param {Object} req.user - El usuario autenticado decodificado del token.
+ * @param {string} req.user.userId - El ID del usuario autenticado.
+ * @param {Object} res - La respuesta HTTP.
+ */
 exports.delete = async (req, res) => {
+  const { password } = req.body;
+
   try {
-    await User.findByIdAndDelete(req.userId); // Asumiendo que auth middleware coloca el userId en la solicitud
-    res.status(200).json({ message: "Usuario eliminado" });
+    // Buscar el usuario por el userId
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Verificar si la contraseña proporcionada coincide con la almacenada
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "La contraseña es incorrecta" });
+    }
+
+    // Eliminar el usuario usando findByIdAndDelete
+    await User.findByIdAndDelete(req.user.userId);
+
+    // Responder con un mensaje de éxito
+    res.status(200).json({ message: "Cuenta eliminada correctamente" });
   } catch (err) {
+    console.error("Error al eliminar el usuario:", err);
     res.status(500).json({ message: "Error al eliminar el usuario" });
   }
 };
