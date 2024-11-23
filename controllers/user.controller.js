@@ -345,3 +345,90 @@ exports.addFriend = async (req, res) => {
     res.status(500).json({ message: "Error al agregar el amigo" });
   }
 };
+
+/**
+ * Eliminar un amigo del usuario autenticado (requiere autenticación).
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} req.body - El cuerpo de la solicitud.
+ * @param {string} req.body.email - El correo del amigo que se desea eliminar.
+ * @param {Object} req.user - El usuario autenticado decodificado del token.
+ * @param {string} req.user.userId - El ID del usuario autenticado.
+ * @param {Object} res - La respuesta HTTP.
+ */
+exports.removeFriend = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Buscar al usuario que se desea eliminar como amigo
+    const friend = await User.findOne({ email });
+    if (!friend) {
+      return res.status(404).json({ message: "Amigo no encontrado" });
+    }
+
+    // Buscar al usuario autenticado por el userId del token
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Usuario autenticado no encontrado" });
+    }
+
+    // Verificar si el amigo está en la lista de amigos
+    const friendIndex = user.friends.indexOf(friend._id);
+    if (friendIndex === -1) {
+      return res
+        .status(400)
+        .json({ message: "El usuario no está en tu lista de amigos" });
+    }
+
+    // Eliminar al amigo de la lista de amigos
+    user.friends.splice(friendIndex, 1);
+
+    // Guardar el usuario actualizado
+    await user.save();
+
+    // Responder con un mensaje de éxito
+    res.status(200).json({
+      message: `Amigo ${friend.name} eliminado exitosamente`,
+      friend: {
+        _id: friend._id,
+        name: friend.name,
+        email: friend.email,
+      },
+    });
+  } catch (err) {
+    console.error("Error al eliminar el amigo:", err);
+    res.status(500).json({ message: "Error al eliminar el amigo" });
+  }
+};
+
+/**
+ * Obtener todos los amigos del usuario autenticado.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} req.user - El usuario autenticado decodificado del token.
+ * @param {string} req.user.userId - El ID del usuario autenticado.
+ * @param {Object} res - La respuesta HTTP.
+ */
+exports.getFriends = async (req, res) => {
+  try {
+    // Buscar al usuario autenticado por su ID
+    const user = await User.findById(req.user.userId)
+      .populate("friends", "email name photo") // Poblar los detalles de los amigos
+      .select("friends"); // Solo obtener la lista de amigos
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Verificar si el usuario tiene amigos
+    if (!user.friends || user.friends.length === 0) {
+      return res.status(404).json({ message: "No tienes amigos en la lista" });
+    }
+
+    // Responder con la lista de amigos
+    res.status(200).json({ friends: user.friends });
+  } catch (err) {
+    console.error("Error al obtener la lista de amigos:", err);
+    res.status(500).json({ message: "Error al obtener la lista de amigos" });
+  }
+};
