@@ -291,3 +291,40 @@ exports.delete = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar el usuario" });
   }
 };
+
+exports.addFriend = async (req, res) => {
+  const { email, name } = req.body;
+
+  try {
+    // Buscar al usuario que se desea agregar como amigo
+    const friend = await User.findOne({ email });
+    if (!friend) {
+      return res.status(404).json({ message: "Amigo no encontrado" });
+    }
+
+    // Verificar si el amigo ya está en la lista de amigos
+    const user = await User.findById(req.user.userId);
+    if (user.friends.includes(friend._id)) {
+      return res.status(400).json({ message: "Ya eres amigo de este usuario" });
+    }
+
+    // Agregar al amigo a la lista de amigos del usuario
+    user.friends.push(friend._id);
+
+    // Guardar el usuario actualizado
+    await user.save();
+
+    // Responder con un mensaje de éxito
+    res.status(200).json({
+      message: `Amigo ${name} agregado exitosamente`,
+      friend: {
+        _id: friend._id,
+        name: friend.name,
+        email: friend.email,
+      },
+    });
+  } catch (err) {
+    console.error("Error al agregar el amigo:", err);
+    res.status(500).json({ message: "Error al agregar el amigo" });
+  }
+};

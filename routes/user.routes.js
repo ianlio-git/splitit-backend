@@ -18,6 +18,9 @@ router.put("/update", auth, userController.update);
 // Ruta para eliminar el usuario (requiere autenticación)
 router.delete("/delete", auth, userController.delete);
 
+// Ruta para agregar un amigo
+router.post("/add-friend", auth, userController.addFriend);
+
 // **Nueva ruta de respuesta** que dirige a la función response del controlador
 router.get("/response", userController.response); // Cambié aquí para usar userController.response
 
