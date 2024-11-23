@@ -1,0 +1,11 @@
+{
+  "_id": { "$oid": "67415eea7c991b90219c5233" },
+  "uploader": { "$oid": "67415cc87c991b90219c5231" },
+  "description": "Cena en restaurante",
+  "date": { "$date": { "$numberLong": "1704067200000" } },
+  "image": "https://example.com/ticket.jpg",
+  "amount": { "$numberDouble": "120.5" },
+  "distribution": { "$numberInt": "60" },
+  "createdAt": { "$date": { "$numberLong": "1704067200000" } },
+  "updatedAt": { "$date": { "$numberLong": "1704067200000" } }
+}

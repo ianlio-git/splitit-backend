@@ -1,0 +1,10 @@
+{
+  "_id": { "$oid": "67415cc87c991b90219c5231" },
+  "email": "usuario1@example.com",
+  "password": "1234",
+  "name": "Nombre",
+  "lastname": "Apellido",
+  "projects": [{ "$oid": "67415e297c991b90219c5232" }],
+  "createdAt": { "$date": { "$numberLong": "1732320000000" } },
+  "updatedAt": { "$date": { "$numberLong": "1732320000000" } }
+}

@@ -1,0 +1,10 @@
+{
+  "_id": { "$oid": "67415e297c991b90219c5232" },
+  "name": "Viaje a la playa",
+  "description": "División de gastos para el viaje",
+  "owner": { "$oid": "67415cc87c991b90219c5231" },
+  "members": [{ "$oid": "67415ff57c991b90219c5234" }],
+  "tickets": [{ "$oid": "67415eea7c991b90219c5233" }],
+  "createdAt": { "$date": { "$numberLong": "1704067200000" } },
+  "updatedAt": { "$date": { "$numberLong": "1704067200000" } }
+}
