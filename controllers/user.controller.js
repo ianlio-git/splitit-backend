@@ -95,12 +95,12 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Credenciales inválidas" });
+      return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Credenciales inválidas" });
+      return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
     // Si JWT_SECRET está definido, creamos el token
@@ -112,6 +112,7 @@ exports.login = async (req, res) => {
     res.status(200).json({
       message: "Ingresaste con éxito", // Mensaje de éxito
       token: token, // El token generado
+      status: "200",
     });
   } catch (err) {
     console.log(err); // Esto te dará más detalles sobre el error
