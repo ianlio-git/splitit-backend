@@ -9,6 +9,8 @@ router.get("/test", projectController.testMessage);
 // Ruta para crear un nuevo proyecto (requiere autenticación)
 router.post("/create", auth, projectController.createProject);
 
-// Aquí puedes agregar otras rutas de proyectos, como obtener proyectos, actualizar, eliminar, etc.
+// Ruta para agregar miembros a un proyecto (requiere autenticación)
+router.post("/add-members", auth, projectController.addMemberToProject);
 
+// Aquí puedes agregar otras rutas de proyectos, como obtener proyectos, actualizar, eliminar, etc.
 module.exports = router;

@@ -61,64 +61,66 @@ exports.createProject = async (req, res) => {
   }
 };
 
-// Función para agregar miembros a un proyecto
-exports.addMembersToProject = async (req, res) => {
-  const { projectId, memberIds } = req.body; // Extraemos el ID del proyecto y los IDs de los miembros a agregar
+exports.addMemberToProject = async (req, res) => {
+  const { projectId, memberId } = req.body; // Recibimos el ID del proyecto y el ID del miembro a agregar
 
   try {
-    // Verificamos si el proyecto existe
+    // Verificamos si el usuario que está creando el proyecto (el propietario) existe
+    const owner = await User.findById(req.user.userId); // req.user.userId es el ID del usuario autenticado
+    if (!owner) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Buscamos el proyecto por su ID
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: "Proyecto no encontrado" });
     }
 
-    // Verificamos si el usuario que está intentando agregar miembros es el propietario del proyecto
-    const owner = await User.findById(req.user.userId);
-    if (!owner || owner._id.toString() !== project.owner.toString()) {
+    // Verificamos si el usuario autenticado es el propietario del proyecto
+    if (project.owner.toString() !== req.user.userId) {
       return res
         .status(403)
-        .json({
-          message: "No tienes permiso para agregar miembros a este proyecto",
-        });
+        .json({ message: "No tienes permisos para modificar este proyecto" });
     }
 
-    // Verificamos si los IDs de miembros pertenecen a los amigos del usuario
-    const invalidMemberIds = [];
-    for (const memberId of memberIds) {
-      // Comprobamos si el miembro está en la lista de amigos del propietario
-      const isFriend = owner.friends.includes(memberId);
-      if (!isFriend) {
-        invalidMemberIds.push(memberId);
-      }
+    // Verificamos si el miembro está en la lista de amigos del propietario
+    if (!owner.friends.includes(memberId)) {
+      return res.status(400).json({
+        message: `El usuario con ID ${memberId} no está en tu lista de amigos`,
+      });
     }
 
-    // Si hay IDs inválidos, devolvemos un error
-    if (invalidMemberIds.length > 0) {
-      return res
-        .status(400)
-        .json({
-          message: `Los siguientes usuarios no son amigos: ${invalidMemberIds.join(
-            ", "
-          )}`,
-        });
+    // Agregamos el miembro al proyecto
+    if (!project.members.includes(memberId)) {
+      project.members.push(memberId); // Solo lo agregamos si no está ya en la lista de miembros
+      await project.save();
+    } else {
+      return res.status(400).json({
+        message: `El miembro con ID ${memberId} ya está en el proyecto.`,
+      });
     }
 
-    // Agregamos los miembros al proyecto
-    project.members.push(...memberIds);
-    await project.save();
+    // Agregamos el proyecto al array de proyectos del miembro
+    const member = await User.findById(memberId);
+    if (member) {
+      member.projects.push(project._id); // Agregamos el proyecto al array de proyectos del miembro
+      await member.save();
+    }
 
     // Respondemos con el proyecto actualizado
     res.status(200).json({
-      message: "Miembros agregados correctamente",
+      message: "Miembro agregado correctamente al proyecto",
       project: {
         id: project._id,
         name: project.name,
         description: project.description,
+        owner: project.owner,
         members: project.members,
       },
     });
   } catch (err) {
-    console.error("Error al agregar miembros:", err);
-    res.status(500).json({ message: "Error al agregar miembros al proyecto" });
+    console.error("Error al agregar miembro al proyecto:", err);
+    res.status(500).json({ message: "Error al agregar miembro al proyecto" });
   }
 };
