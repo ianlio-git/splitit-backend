@@ -1,0 +1,105 @@
+
+test
+GET: http://localhost:4000/api/users/response
+users
+GET: http://localhost:4000/api/users/users
+
+user.controller:
+
+login
+POST: http://localhost:4000/api/users/login
+{
+  "email": "prueba@ejemplo.com",
+  "password": "1234"
+}
+
+register
+POST: http://localhost:4000/api/users/register
+{"email":"usuario2@ejemplo.com","password":"1234"}
+
+profile
+GET: http://localhost:4000/api/users/profile
+heder 
+x-auth-token: token
+
+update
+PUT: http://localhost:4000/api/users/update
+heder 
+x-auth-token: token
+{
+  "name": "pablo",
+  "email": "prueba@ejemplo.com",
+  "password": "1234",
+  "photo": "https://nuevoenlacefoto.com"
+}
+
+delete user
+DELETE: http://localhost:4000/api/users/delete
+heder 
+x-auth-toke: token
+{"password":"1234"}
+
+reset password
+POST: ​http://localhost:4000/api/users/reset
+{
+  "email": "diegodangona@gmail.com"
+}
+
+
+FRIENDS
+
+show friends 
+GET: http://localhost:4000/api/users/friends
+heder 
+x-auth-token: token
+
+add-friend
+POST: http://localhost:4000/api/users/add-friend
+heder 
+x-auth-token: token
+{
+  "email": "usuario2@ejemplo.com",
+  "name": "carlos"
+}
+
+delete friend
+POST: http://localhost:4000/api/users/remove-friend
+heder 
+x-auth-token: token
+{
+  "email": "usuario2@ejemplo.com",
+}
+
+PROJECTS
+
+test
+GET: http://localhost:4000/api/projects/test
+
+create project
+POST: http://localhost:4000/api/projects/create
+heder 
+x-auth-token: token
+{
+  "name": "Mi nuevo proyecto 2",
+  "description": "Descripción del proyecto 2"
+}
+
+add member
+POST: http://localhost:4000/api/projects/add-members
+heder 
+x-auth-token: token
+{
+  "projectId": "674225d71fde707adbe6f7ee",
+  "memberId": "6741dad00c2a4ccd854ca415"
+}
+
+get one project (main project)
+POST: http://localhost:4000/api/projects/post-details 
+heder 
+x-auth-token: token
+{"projectId":"674225d71fde707adbe6f7ee"}
+
+show  all projects acount
+GET: http://localhost:4000/api/projects/get-all
+heder 
+x-auth-token: token
