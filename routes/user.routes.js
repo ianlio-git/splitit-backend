@@ -30,6 +30,9 @@ router.get("/friends", auth, userController.getFriends);
 // Ruta para enviar
 router.post("/reset", userController.resetPassword);
 
+// Ruta para cambiar la contraseña
+router.post("/change-password", auth, userController.changePassword);
+
 // **Nueva ruta de respuesta** que dirige a la función response del controlador
 router.get("/response", userController.response); // Cambié aquí para usar userController.response
 

@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user.model"); // Importa el modelo de usuario
 const Project = require("../models/project.model"); // Importa el modelo de proyecto
 const { ObjectId } = require("mongodb"); // Importa ObjectId de mongodb
-const { Resend } = require("resend");
 
 /**
  * Envía una respuesta de prueba en formato JSON.
@@ -437,8 +436,8 @@ exports.getFriends = async (req, res) => {
 
 //---------------------------------------------
 
-// Instancia de Resend con la clave API
-const resend = new Resend(process.env.RESEND_API_KEY);
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Configura tu API Key de SendGrid
 
 exports.resetPassword = async (req, res) => {
   const { email } = req.body;
@@ -464,12 +463,16 @@ exports.resetPassword = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    // Enlace de reseteo sin el email en la URL
+    const resetLink = `${
+      process.env.FRONTEND_URL
+    }/reset-password?token=${encodeURIComponent(token)}`;
 
     // Contenido del correo
     const emailContent = {
-      from: "onboarding@resend.dev", // Cambiar con el correo del remitente
       to: cleanedEmail,
+      from: "ianlionetti17@gmail.com", // Cambia esto por tu remitente verificado en SendGrid
       subject: "Reseteo de contraseña",
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -483,21 +486,68 @@ exports.resetPassword = async (req, res) => {
       `,
     };
 
-    // Intentar enviar el correo utilizando el método correcto
+    // Intentar enviar el correo
     try {
-      await resend.emails.send(emailContent); // Usar `emails.send` con la configuración de Resend
+      await sgMail.send(emailContent);
       return res.status(200).json({
         message: "Correo de reseteo enviado exitosamente.",
-        token: token,
+        token: token, // Este token será útil para procesar el restablecimiento en la UI
       });
     } catch (error) {
-      console.error("Error al procesar el envío del correo:", error.message);
+      console.error("Error al enviar el correo:", error.message);
       return res
         .status(500)
         .json({ error: "No se pudo enviar el correo de reseteo." });
     }
   } catch (error) {
     console.error("Error al procesar la solicitud:", error.message);
+    return res.status(500).json({ error: "No se pudo procesar la solicitud." });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  const token = req.headers["x-auth-token"]; // Obtener el token desde x-auth-token en los encabezados
+  const { newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res
+      .status(400)
+      .json({ error: "El token y la nueva contraseña son requeridos." });
+  }
+
+  try {
+    // Verificar el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+    // Buscar al usuario
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado." });
+    }
+
+    // Generar el hash de la nueva contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Actualizar la contraseña del usuario
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({
+      message: "La contraseña se ha cambiado exitosamente.",
+    });
+  } catch (error) {
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError"
+    ) {
+      return res
+        .status(400)
+        .json({ error: "El token es inválido o ha expirado." });
+    }
+
+    console.error("Error al cambiar la contraseña:", error.message);
     return res.status(500).json({ error: "No se pudo procesar la solicitud." });
   }
 };
