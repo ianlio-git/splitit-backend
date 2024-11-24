@@ -124,3 +124,72 @@ exports.addMemberToProject = async (req, res) => {
     res.status(500).json({ message: "Error al agregar miembro al proyecto" });
   }
 };
+
+// Función para obtener los detalles de un proyecto
+exports.postProjectDetails = async (req, res) => {
+  // Extraemos el token de los encabezados de la solicitud
+  const token = req.header("x-auth-token");
+
+  if (!token) {
+    return res.status(401).json({ msg: "No token, authorization denied" });
+  }
+
+  try {
+    // Verificamos y decodificamos el token para obtener el ID del usuario
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId; // Asegúrate de que el token contenga el campo `userId`
+
+    // Extraemos el projectId del cuerpo de la solicitud
+    const { projectId } = req.body;
+
+    console.log("Token recibido:", token);
+    console.log("ProjectId recibido en el body:", projectId);
+    console.log("userId extraído del token:", userId);
+
+    if (!projectId) {
+      return res.status(400).json({ msg: "Project ID is required" });
+    }
+
+    // Buscar el usuario en la base de datos utilizando el userId extraído del token
+    const user = await User.findById(userId).populate({
+      path: "projects", // Popula los proyectos del usuario
+      populate: [
+        { path: "owner", select: "name email" },
+        { path: "members", select: "name email" },
+      ],
+    });
+
+    // Verificamos si el usuario existe
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Verificamos si el proyecto existe en los proyectos del usuario
+    const project = user.projects.find(
+      (proj) => proj._id.toString() === projectId
+    );
+
+    if (!project) {
+      return res
+        .status(404)
+        .json({ message: "Proyecto no encontrado o no autorizado" });
+    }
+
+    // Si encontramos el proyecto, devolvemos los detalles
+    res.status(200).json({
+      message: "Detalles del proyecto obtenidos correctamente",
+      project: {
+        id: project._id,
+        name: project.name,
+        description: project.description,
+        owner: project.owner, // Detalles del propietario
+        members: project.members, // Detalles de los miembros
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt,
+      },
+    });
+  } catch (err) {
+    console.error("Error al verificar el token o al obtener el proyecto:", err);
+    res.status(500).json({ message: "Error al obtener el proyecto" });
+  }
+};

@@ -8,8 +8,15 @@ module.exports = function (req, res, next) {
   }
 
   try {
+    // Decodificar el token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Asegúrate de asignar el token decodificado a req.user
+
+    // Verificar que el decoded contenga el userId correctamente
+    console.log("Decoded token:", decoded);
+
+    // Asegurarse de que el ID esté correctamente asignado a req.user
+    req.user = decoded; // Aquí es donde asignamos el decoded completo
+
     next();
   } catch (err) {
     console.error("Error al verificar el token:", err);
