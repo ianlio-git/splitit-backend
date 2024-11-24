@@ -439,6 +439,14 @@ exports.getFriends = async (req, res) => {
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Configura tu API Key de SendGrid
 
+/**
+ * Enviar un correo de reseteo de contraseña al usuario.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} req.body - El cuerpo de la solicitud.
+ * @param {string} req.body.email - El correo electrónico del usuario.
+ * @param {Object} res - La respuesta HTTP.
+ */
+
 exports.resetPassword = async (req, res) => {
   const { email } = req.body;
   console.log("Correo recibido:", email);
@@ -504,7 +512,15 @@ exports.resetPassword = async (req, res) => {
     return res.status(500).json({ error: "No se pudo procesar la solicitud." });
   }
 };
-
+/**
+ * Cambiar la contraseña del usuario autenticado.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} req.headers - Los encabezados de la solicitud.
+ * @param {string} req.headers["x-auth-token"] - El token de autenticación.
+ * @param {Object} req.body - El cuerpo de la solicitud.
+ * @param {string} req.body.newPassword - La nueva contraseña del usuario.
+ * @param {Object} res - La respuesta HTTP.
+ */
 exports.changePassword = async (req, res) => {
   const token = req.headers["x-auth-token"]; // Obtener el token desde x-auth-token en los encabezados
   const { newPassword } = req.body;
