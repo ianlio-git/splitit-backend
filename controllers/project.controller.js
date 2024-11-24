@@ -193,3 +193,105 @@ exports.postProjectDetails = async (req, res) => {
     res.status(500).json({ message: "Error al obtener el proyecto" });
   }
 };
+
+// Función para obtener todos los proyectos de un usuario
+exports.getAllProjects = async (req, res) => {
+  // Extraemos el token de los encabezados de la solicitud
+  const token = req.header("x-auth-token");
+
+  if (!token) {
+    return res.status(401).json({ msg: "No token, authorization denied" });
+  }
+
+  try {
+    // Verificamos y decodificamos el token para obtener el ID del usuario
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId; // Asegúrate de que el token contenga el campo `userId`
+
+    console.log("userId extraído del token:", userId);
+
+    // Buscar el usuario en la base de datos utilizando el userId extraído del token
+    const user = await User.findById(userId).populate({
+      path: "projects", // Popula los proyectos del usuario
+      select: "name description", // Seleccionamos solo el nombre y la descripción de cada proyecto
+    });
+
+    // Verificamos si el usuario existe
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Si no tiene proyectos
+    if (!user.projects || user.projects.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No se encontraron proyectos para este usuario" });
+    }
+
+    // Devolvemos el listado de proyectos con su nombre, detalle y id
+    res.status(200).json({
+      message: "Proyectos del usuario obtenidos correctamente",
+      projects: user.projects.map((project) => ({
+        id: project._id,
+        name: project.name,
+        description: project.description,
+      })),
+    });
+  } catch (err) {
+    console.error(
+      "Error al verificar el token o al obtener los proyectos:",
+      err
+    );
+    res.status(500).json({ message: "Error al obtener los proyectos" });
+  }
+};
+
+// Función para eliminar un miembro de un proyecto
+exports.removeMemberFromProject = async (req, res) => {
+  const { projectId, memberId } = req.body; // El ID del proyecto y el ID del miembro a eliminar
+
+  // Verificar si el proyecto y el miembro están presentes
+  if (!projectId || !memberId) {
+    return res
+      .status(400)
+      .json({ message: "Se debe proporcionar el projectId y el memberId" });
+  }
+
+  try {
+    // Buscar el proyecto por ID
+    const project = await Project.findById(projectId);
+
+    // Verificar si el proyecto existe
+    if (!project) {
+      return res.status(404).json({ message: "Proyecto no encontrado" });
+    }
+
+    // Verificar si el miembro está en el proyecto
+    if (!project.members.includes(memberId)) {
+      return res
+        .status(400)
+        .json({ message: "El miembro no está en el proyecto" });
+    }
+
+    // Eliminar el miembro del array de miembros
+    project.members = project.members.filter(
+      (member) => member.toString() !== memberId
+    );
+
+    // Guardar los cambios en el proyecto
+    await project.save();
+
+    // Opcional: Eliminar también el proyecto del listado de proyectos del usuario
+    await User.updateOne({ _id: memberId }, { $pull: { projects: projectId } });
+
+    // Responder exitosamente
+    res
+      .status(200)
+      .json({ message: "Miembro eliminado del proyecto correctamente" });
+  } catch (err) {
+    console.error("Error al eliminar miembro del proyecto:", err);
+    res
+      .status(500)
+      .json({ message: "Error al eliminar el miembro del proyecto" });
+  }
+};

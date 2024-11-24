@@ -15,5 +15,7 @@ router.post("/add-members", auth, projectController.addMemberToProject);
 // Ruta para obtener los datos de un proyecto (requiere autenticación)
 router.post("/post-details", auth, projectController.postProjectDetails);
 
+// Ruta para obtener todos los proyectos (requiere autenticación)
+router.get("/get-all", auth, projectController.getAllProjects);
 // Aquí puedes agregar otras rutas de proyectos, como obtener proyectos, actualizar, eliminar, etc.
 module.exports = router;
