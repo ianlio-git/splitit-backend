@@ -27,6 +27,9 @@ router.post("/remove-friend", auth, userController.removeFriend);
 // Ruta para obtener amigos
 router.get("/friends", auth, userController.getFriends);
 
+// Ruta para enviar
+router.post("/reset", userController.resetPassword);
+
 // **Nueva ruta de respuesta** que dirige a la función response del controlador
 router.get("/response", userController.response); // Cambié aquí para usar userController.response
 

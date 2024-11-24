@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user.model"); // Importa el modelo de usuario
 const Project = require("../models/project.model"); // Importa el modelo de proyecto
 const { ObjectId } = require("mongodb"); // Importa ObjectId de mongodb
+const { Resend } = require("resend");
 
 /**
  * Envía una respuesta de prueba en formato JSON.
@@ -431,5 +432,72 @@ exports.getFriends = async (req, res) => {
   } catch (err) {
     console.error("Error al obtener la lista de amigos:", err);
     res.status(500).json({ message: "Error al obtener la lista de amigos" });
+  }
+};
+
+//---------------------------------------------
+
+// Instancia de Resend con la clave API
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+exports.resetPassword = async (req, res) => {
+  const { email } = req.body;
+  console.log("Correo recibido:", email);
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ error: "El correo electrónico es requerido." });
+  }
+
+  try {
+    const cleanedEmail = email.trim();
+    const user = await User.findOne({ email: cleanedEmail });
+    if (!user) {
+      console.log("Usuario no encontrado con el correo:", cleanedEmail);
+      return res.status(404).json({ error: "El correo no está registrado." });
+    }
+
+    // Generación de token
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    // Contenido del correo
+    const emailContent = {
+      from: "onboarding@resend.dev", // Cambiar con el correo del remitente
+      to: cleanedEmail,
+      subject: "Reseteo de contraseña",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+          <h2>Resetea tu contraseña</h2>
+          <p>Hola,</p>
+          <p>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el enlace de abajo para continuar:</p>
+          <a href="${resetLink}" style="color: #007bff; text-decoration: none;" target="_blank">Resetear contraseña</a>
+          <p>Si no realizaste esta solicitud, simplemente ignora este correo.</p>
+          <p>Atentamente,<br>El equipo de Soporte</p>
+        </div>
+      `,
+    };
+
+    // Intentar enviar el correo utilizando el método correcto
+    try {
+      await resend.emails.send(emailContent); // Usar `emails.send` con la configuración de Resend
+      return res.status(200).json({
+        message: "Correo de reseteo enviado exitosamente.",
+        token: token,
+      });
+    } catch (error) {
+      console.error("Error al procesar el envío del correo:", error.message);
+      return res
+        .status(500)
+        .json({ error: "No se pudo enviar el correo de reseteo." });
+    }
+  } catch (error) {
+    console.error("Error al procesar la solicitud:", error.message);
+    return res.status(500).json({ error: "No se pudo procesar la solicitud." });
   }
 };
