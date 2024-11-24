@@ -472,15 +472,15 @@ exports.resetPassword = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // Enlace de reseteo sin el email en la URL
-    const resetLink = `${
-      process.env.FRONTEND_URL
-    }/reset-password?token=${encodeURIComponent(token)}`;
+    // Enlace de reseteo
+    const resetLink = `http://localhost:5173/recovery?token=${encodeURIComponent(
+      token
+    )}`;
 
     // Contenido del correo
     const emailContent = {
       to: cleanedEmail,
-      from: "ianlionetti17@gmail.com", // Cambia esto por tu remitente verificado en SendGrid
+      from: "ianlionetti17@gmail.com", // Cambia esto por tu remitente verificado en tu servicio de email
       subject: "Reseteo de contraseña",
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -499,7 +499,7 @@ exports.resetPassword = async (req, res) => {
       await sgMail.send(emailContent);
       return res.status(200).json({
         message: "Correo de reseteo enviado exitosamente.",
-        token: token, // Este token será útil para procesar el restablecimiento en la UI
+        token: token, // Incluir el token en la respuesta para depuración
       });
     } catch (error) {
       console.error("Error al enviar el correo:", error.message);
@@ -512,6 +512,7 @@ exports.resetPassword = async (req, res) => {
     return res.status(500).json({ error: "No se pudo procesar la solicitud." });
   }
 };
+
 /**
  * Cambiar la contraseña del usuario autenticado.
  * @param {Object} req - La solicitud HTTP.
