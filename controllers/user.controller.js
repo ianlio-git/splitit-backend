@@ -47,7 +47,7 @@ exports.getAllUsers = async (req, res) => {
  * @param {Object} res - La respuesta HTTP.
  */
 exports.register = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, fullName } = req.body;
 
   try {
     // Verificar si el usuario ya existe
@@ -56,13 +56,39 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "El usuario ya existe" });
     }
 
+    // Separar el nombre completo en nombre y apellido si es posible
+    let name = fullName.trim();
+    let lastname = "";
+
+    if (fullName && fullName.trim().includes(" ")) {
+      const [primerNombre, ...restoApellido] = fullName.trim().split(" ");
+      name = primerNombre;
+      lastname = restoApellido.join(" ");
+    }
+
     // Hashear la contraseña del usuario
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword });
+
+    // Crear el nuevo usuario
+    const newUser = new User({
+      email,
+      password: hashedPassword,
+      name,
+      lastname,
+    });
 
     // Guardar el nuevo usuario en la base de datos
     await newUser.save();
-    res.status(201).json({ message: "Usuario registrado exitosamente" });
+
+    res.status(201).json({
+      message: "Usuario registrado exitosamente",
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        name: newUser.name,
+        lastname: newUser.lastname,
+      },
+    });
   } catch (err) {
     console.error("Error al registrar el usuario:", err); // Imprime el error detallado
     res.status(500).json({ message: "Error al registrar el usuario" });
@@ -188,6 +214,7 @@ exports.profile = async (req, res) => {
  * @param {string} req.user.userId - El ID del usuario autenticado.
  * @param {Object} res - La respuesta HTTP.
  */
+
 exports.update = async (req, res) => {
   const { name, email, password, photo } = req.body;
 

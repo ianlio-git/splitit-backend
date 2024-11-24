@@ -12,6 +12,16 @@ router.post("/create", auth, projectController.createProject);
 // Ruta para agregar miembros a un proyecto (requiere autenticación)
 router.post("/add-members", auth, projectController.addMemberToProject);
 
+// Ruta para eliminar miembros de un proyecto (requiere autenticación)
+router.delete(
+  "/delete-member",
+  auth,
+  projectController.removeMemberFromProject
+);
+
+// Ruta para eliminar un proyecto (requiere autenticación)
+router.delete("/delete-project", auth, projectController.removeProject);
+
 // Ruta para obtener los datos de un proyecto (requiere autenticación)
 router.post("/post-details", auth, projectController.postProjectDetails);
 
