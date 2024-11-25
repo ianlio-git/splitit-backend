@@ -1,111 +1,239 @@
+--------------------------------------------------------------------------------------------
+USERS
+--------------------------------------------------------------------------------------------
 
-test
-GET: http://localhost:4000/api/users/response
-users
-GET: http://localhost:4000/api/users/users
+1. Obtener respuesta
 
-user.controller:
+    GET: http://localhost:4000/api/users/response
 
-login
-POST: http://localhost:4000/api/users/login
-{
-  "email": "prueba@ejemplo.com",
-  "password": "1234"
-}
+--------------------------------------------------------------------------------------------
 
-register
-POST: http://localhost:4000/api/users/register
-{"email":"usuario2@ejemplo.com","password":"1234"}
+2. Obtener todos los usuarios
 
-profile
-GET: http://localhost:4000/api/users/profile
-heder 
-x-auth-token: token
+    GET: http://localhost:4000/api/users/users
 
-update
-PUT: http://localhost:4000/api/users/update
-heder 
-x-auth-token: token
-{
-  "name": "pablo",
-  "email": "prueba@ejemplo.com",
-  "password": "1234",
-  "photo": "https://nuevoenlacefoto.com"
-}
+--------------------------------------------------------------------------------------------
+1. Iniciar sesión
 
-delete user
-DELETE: http://localhost:4000/api/users/delete
-heder 
-x-auth-toke: token
-{"password":"1234"}
+    POST: http://localhost:4000/api/users/login
+    Body:
 
-send email
-POST: http://localhost:4000/api/users/reset
-{"email": "ianlionetti17@gmail.com"}
+    {
+      "email": "prueba@ejemplo.com",
+      "password": "1234"
+    }
 
-change password
-POST: ​http://localhost:4000/api/users/change-password
-heder 
-x-auth-token: token
-{
-  "newPassword": "123456"
-}
+--------------------------------------------------------------------------------------------
+2. Registrar usuario
 
+    POST: http://localhost:4000/api/users/register
+    Body:
+
+    {
+      "name": "usuario1",
+      "email": "usuario2@ejemplo.com",
+      "password": "1234"
+    }
+--------------------------------------------------------------------------------------------
+3. Ver perfil
+
+    GET: http://localhost:4000/api/users/profile
+    Header:
+    x-auth-token: <token>
+--------------------------------------------------------------------------------------------
+4. Actualizar perfil
+
+    PUT: http://localhost:4000/api/users/update
+    Header:
+    x-auth-token: <token>
+    Body:
+
+    {
+      "name": "pablo",
+      "lastname": "pablo",
+      "email": "prueba@ejemplo.com",
+      "password": "1234",
+      "photo": "https://nuevoenlacefoto.com"
+    }
+--------------------------------------------------------------------------------------------
+5. Eliminar usuario
+
+    DELETE: http://localhost:4000/api/users/delete
+    Header:
+    x-auth-token: <token>
+    Body:
+
+    {
+      "password": "1234"
+    }
+--------------------------------------------------------------------------------------------
+6. Enviar correo de restablecimiento
+
+    POST: http://localhost:4000/api/users/reset
+    Body:
+
+    {
+      "email": "ianlionetti17@gmail.com"
+    }
+--------------------------------------------------------------------------------------------
+7. Cambiar contraseña
+
+    POST: http://localhost:4000/api/users/change-password
+    Header:
+    x-auth-token: <token>
+    Body:
+
+    {
+      "newPassword": "123456"
+    }
+--------------------------------------------------------------------------------------------
 FRIENDS
+--------------------------------------------------------------------------------------------
+1. Mostrar amigos
 
-show friends 
-GET: http://localhost:4000/api/users/friends
-heder 
-x-auth-token: token
+    GET: http://localhost:4000/api/users/friends
+    Header:
+    x-auth-token: <token>
+--------------------------------------------------------------------------------------------
+2. Agregar amigo
 
-add-friend
-POST: http://localhost:4000/api/users/add-friend
-heder 
-x-auth-token: token
-{
-  "email": "usuario2@ejemplo.com",
-  "name": "carlos"
-}
+    POST: http://localhost:4000/api/users/add-friend
+    Header:
+    x-auth-token: <token>
+    Body:
 
-delete friend
-POST: http://localhost:4000/api/users/remove-friend
-heder 
-x-auth-token: token
-{
-  "email": "usuario2@ejemplo.com",
-}
+    {
+      "email": "usuario2@ejemplo.com",
+      "name": "carlos"
+    }
+--------------------------------------------------------------------------------------------
+3. Eliminar amigo
 
+    POST: http://localhost:4000/api/users/remove-friend
+    Header:
+    x-auth-token: <token>
+    Body:
+
+    {
+      "email": "usuario2@ejemplo.com"
+    }
+--------------------------------------------------------------------------------------------
 PROJECTS
+--------------------------------------------------------------------------------------------
+1. Obtener test de proyectos
 
-test
-GET: http://localhost:4000/api/projects/test
+    GET: http://localhost:4000/api/projects/test
 
-create project
-POST: http://localhost:4000/api/projects/create
-heder 
-x-auth-token: token
+2. Crear proyecto
+
+    POST: http://localhost:4000/api/projects/create
+    Header:
+    x-auth-token: <token>
+    Body:
+
+    {
+      "name": "Mi nuevo proyecto 2",
+      "description": "Descripción del proyecto 2"
+    }
+--------------------------------------------------------------------------------------------
+3. Agregar miembro al proyecto
+
+    POST: http://localhost:4000/api/projects/add-members
+    Header:
+    x-auth-token: <token>
+    Body:
+
+    {
+      "projectId": "674225d71fde707adbe6f7ee",
+      "memberId": "6741dad00c2a4ccd854ca415"
+    }
+--------------------------------------------------------------------------------------------
+4. Obtener detalles de un proyecto (proyecto principal)
+
+    POST: http://localhost:4000/api/projects/post-details
+    Header:
+    x-auth-token: <token>
+    Body:
+
+    {
+      "projectId": "674225d71fde707adbe6f7ee"
+    }
+--------------------------------------------------------------------------------------------
+5. Mostrar todos los proyectos de la cuenta
+
+    GET: http://localhost:4000/api/projects/get-all
+    Header:
+    x-auth-token: <token>
+--------------------------------------------------------------------------------------------
+6. Eliminar miembro de proyecto
+
+    DELETE: http://localhost:4000/api/projects/delete-member
+    Header:
+    x-auth-token: <token>
+    Body:
+
+    {
+      "projectId": "674378116ed19c37bd4085c2",
+      "memberId": "6742b6b6af44843cfee9ffdb"
+    }
+
+    Nota: Solo el propietario del proyecto puede borrar miembros.
+--------------------------------------------------------------------------------------------
+7. Eliminar proyecto
+
+    DELETE: http://localhost:4000/api/projects/delete-project
+    Header:
+    x-auth-token: <token>
+    Body:
+
 {
-  "name": "Mi nuevo proyecto 2",
-  "description": "Descripción del proyecto 2"
+  "projectId": "674378116ed19c37bd4085c2"
 }
 
-add member
-POST: http://localhost:4000/api/projects/add-members
-heder 
-x-auth-token: token
+Nota: Solo el propietario del proyecto puede eliminar el proyecto.
+--------------------------------------------------------------------------------------------
+TICKETS
+--------------------------------------------------------------------------------------------
+1. Test
+
+    Ruta: GET: http://localhost:4000/api/tickets/test
+    Descripción: Prueba de ruta para verificar el funcionamiento de la API de tickets.
+--------------------------------------------------------------------------------------------
+2. Crear Ticket
+
+    Ruta: POST: http://localhost:4000/api/tickets/create
+    Encabezado:
+        x-auth-token: token
+    Cuerpo:
+
+    {
+      "projectId": "ID_DEL_PROYECTO",
+      "description": "Descripción del ticket",
+      "date": "2024-11-24",
+      "image": "URL_DE_IMAGEN",
+      "amount": 1000,
+      "distribution": "Distribución de recursos"
+    }
+--------------------------------------------------------------------------------------------
+3. Eliminar Ticket
+
+    Ruta: DELETE: http://localhost:4000/api/tickets/delete
+    Encabezado:
+        x-auth-token: token
+    Cuerpo:
+
+    {
+      "ticketId": "ID_DEL_TICKET"
+    }
+--------------------------------------------------------------------------------------------
+4. Obtener Tickets de un Proyecto
+
+    Ruta: POST: http://localhost:4000/api/tickets/get-tikets
+    Encabezado:
+        x-auth-token: token
+    Cuerpo:
+
 {
-  "projectId": "674225d71fde707adbe6f7ee",
-  "memberId": "6741dad00c2a4ccd854ca415"
+  "projectId": "ID_DEL_PROYECTO"
 }
-
-get one project (main project)
-POST: http://localhost:4000/api/projects/post-details 
-heder 
-x-auth-token: token
-{"projectId":"674225d71fde707adbe6f7ee"}
-
-show  all projects acount
-GET: http://localhost:4000/api/projects/get-all
-heder 
-x-auth-token: token
-
+--------------------------------------------------------------------------------------------

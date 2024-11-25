@@ -10,6 +10,7 @@ const cors = require("cors");
 //import routes
 const userRoutes = require("./routes/user.routes"); // Importamos las rutas de usuarios
 const projectRoutes = require("./routes/project.routes"); // Importamos las rutas de proyectos
+const ticketRoutes = require("./routes/ticket.routes"); // Importamos las rutas de tickets
 
 //instance server
 const app = express();
@@ -36,6 +37,7 @@ app.use(function (req, res, next) {
 // Configuración de rutas
 app.use("/api/users", userRoutes); // Las rutas de usuario estarán bajo /api/users
 app.use("/api/projects", projectRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 // Database connection
 const mongoose = require("mongoose");
