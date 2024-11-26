@@ -201,12 +201,12 @@ exports.profile = async (req, res) => {
 };
 
 //---------------------------------------------
-
 /**
  * Actualizar datos del usuario (requiere autenticación).
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} req.body - El cuerpo de la solicitud.
  * @param {string} [req.body.name] - El nuevo nombre del usuario.
+ * @param {string} [req.body.lastname] - El nuevo apellido del usuario.
  * @param {string} [req.body.email] - El nuevo correo electrónico del usuario.
  * @param {string} [req.body.password] - La nueva contraseña del usuario.
  * @param {string} [req.body.photo] - La nueva foto del usuario.
@@ -216,10 +216,10 @@ exports.profile = async (req, res) => {
  */
 
 exports.update = async (req, res) => {
-  const { name, email, password, photo } = req.body;
+  const { name, lastname, email, password, photo } = req.body;
 
   // Validar que al menos uno de los campos está presente en la solicitud
-  if (!name && !email && !password && !photo) {
+  if (!name && !lastname && !email && !password && !photo) {
     return res.status(400).json({
       message: "Debe proporcionar al menos un campo para actualizar.",
     });
@@ -230,10 +230,10 @@ exports.update = async (req, res) => {
     console.log("Token decodificado:", req.user);
 
     // Convertir a ObjectId
-    const userId = new ObjectId(req.user.userId); // Corregido
+    const userId = new ObjectId(req.user.userId);
 
     // Buscar el usuario en la base de datos
-    const user = await User.findById(userId); // Usar ObjectId en la búsqueda
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -260,6 +260,7 @@ exports.update = async (req, res) => {
 
     // Actualizar otros campos
     if (name) user.name = name;
+    if (lastname) user.lastname = lastname;
     if (photo) user.photo = photo;
 
     // Guardar el usuario actualizado
@@ -273,6 +274,7 @@ exports.update = async (req, res) => {
       id: updatedUser._id,
       email: updatedUser.email,
       name: updatedUser.name,
+      lastname: updatedUser.lastname,
       photo: updatedUser.photo,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
