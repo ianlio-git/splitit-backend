@@ -22,27 +22,47 @@ exports.createTicket = async (req, res) => {
   try {
     // Verificar si req.user existe (el token del usuario autenticado)
     if (!req.user) {
+      console.log("No se encontró el usuario autenticado");
       return res.status(401).json({
         msg: "No se pudo encontrar el token del usuario autenticado.",
       });
     }
 
-    // Obtener el ID del proyecto de la solicitud
+    // Obtener los datos de la solicitud
     const { projectId, description, date, image, amount, distribution } =
       req.body;
-
+    console.log("Datos recibidos:", {
+      projectId,
+      description,
+      date,
+      image,
+      amount,
+      distribution,
+    });
     // Verificar si el projectId está presente
     if (!projectId) {
+      console.log("No se proporcionó el ID del proyecto");
       return res.status(400).json({
         msg: "El ID del proyecto es obligatorio.",
       });
     }
+
+    // Log para ver los datos que están llegando en la solicitud
+    console.log("Datos recibidos:", {
+      projectId,
+      description,
+      date,
+      image,
+      amount,
+      distribution,
+    });
 
     // Buscar el proyecto en la base de datos y populamos los miembros
     const project = await Project.findById(projectId).populate("members");
 
     // Verificar si el proyecto existe
     if (!project) {
+      console.log("El proyecto no existe.");
       return res.status(404).json({
         msg: "El proyecto no existe.",
       });
@@ -54,6 +74,7 @@ exports.createTicket = async (req, res) => {
     );
 
     if (!userIsMember) {
+      console.log("El usuario no pertenece al proyecto.");
       return res.status(403).json({
         msg: "El usuario no pertenece a este proyecto.",
       });
@@ -70,8 +91,14 @@ exports.createTicket = async (req, res) => {
       distribution,
     });
 
+    // Log para ver el objeto del ticket antes de guardarlo
+    console.log("Creando ticket:", ticket);
+
     // Guardar el ticket en la base de datos
     const savedTicket = await ticket.save();
+
+    // Log para verificar que el ticket se guardó correctamente
+    console.log("Ticket guardado:", savedTicket);
 
     // Asociar el ticket al proyecto
     project.tickets.push(savedTicket._id);
@@ -83,7 +110,8 @@ exports.createTicket = async (req, res) => {
       ticket: savedTicket,
     });
   } catch (error) {
-    console.error(error);
+    // Log del error
+    console.error("Error al crear el ticket:", error);
     res.status(500).json({
       msg: "Error al crear el ticket.",
     });

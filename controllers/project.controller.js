@@ -23,14 +23,6 @@ exports.createProject = async (req, res) => {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    // Verificamos si el proyecto ya existe
-    const existingProject = await Project.findOne({ name });
-    if (existingProject) {
-      return res
-        .status(400)
-        .json({ message: "El nombre del proyecto ya está en uso" });
-    }
-
     // Creamos un nuevo proyecto con solo el nombre, descripción y propietario
     const newProject = new Project({
       name,
@@ -222,8 +214,16 @@ exports.postProjectDetails = async (req, res) => {
     const user = await User.findById(userId).populate({
       path: "projects", // Popula los proyectos del usuario
       populate: [
-        { path: "owner", select: "name email" },
-        { path: "members", select: "name email" },
+        { path: "owner", select: "name lastname photo email" },
+        { path: "members", select: "name lastname photo email" },
+        {
+          path: "tickets",
+          select: "description date image amount distribution uploader", // Incluimos `uploader`
+          populate: {
+            path: "uploader", // Poblar el uploader del ticket para obtener su nombre y apellido
+            select: "name lastname", // Seleccionamos solo los campos necesarios
+          },
+        },
       ],
     });
 
@@ -243,7 +243,7 @@ exports.postProjectDetails = async (req, res) => {
         .json({ message: "Proyecto no encontrado o no autorizado" });
     }
 
-    // Si encontramos el proyecto, devolvemos los detalles
+    // Si encontramos el proyecto, devolvemos los detalles junto con los tickets, el uploader y el id de los tickets
     res.status(200).json({
       message: "Detalles del proyecto obtenidos correctamente",
       project: {
@@ -252,6 +252,19 @@ exports.postProjectDetails = async (req, res) => {
         description: project.description,
         owner: project.owner, // Detalles del propietario
         members: project.members, // Detalles de los miembros
+        tickets: project.tickets.map((ticket) => ({
+          id: ticket._id, // Agregamos el id del ticket
+          description: ticket.description,
+          date: ticket.date,
+          image: ticket.image,
+          amount: ticket.amount,
+          distribution: ticket.distribution,
+          uploader: {
+            id: ticket.uploader._id, // Agregamos el id del uploader
+            name: ticket.uploader.name,
+            lastname: ticket.uploader.lastname, // Información del uploader
+          },
+        })), // Incluimos la información del uploader para cada ticket
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
       },
@@ -342,11 +355,9 @@ exports.removeMemberFromProject = async (req, res) => {
     // Verificar si el usuario autenticado es el propietario del proyecto
     // Aseguramos que el propietario (owner) sea el único que pueda eliminar miembros
     if (project.owner.toString() !== req.user.userId) {
-      return res
-        .status(403)
-        .json({
-          message: "Solo el propietario del proyecto puede eliminar miembros",
-        });
+      return res.status(403).json({
+        message: "Solo el propietario del proyecto puede eliminar miembros",
+      });
     }
 
     // Eliminar el miembro del array de miembros
