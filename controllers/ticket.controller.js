@@ -20,69 +20,43 @@ exports.testMessage = (req, res) => {
  */
 exports.createTicket = async (req, res) => {
   try {
-    // Verificar si req.user existe (el token del usuario autenticado)
     if (!req.user) {
-      console.log("No se encontró el usuario autenticado");
       return res.status(401).json({
         msg: "No se pudo encontrar el token del usuario autenticado.",
       });
     }
-
-    // Obtener los datos de la solicitud
+    
     const { projectId, description, date, image, amount, distribution } =
       req.body;
-    console.log("Datos recibidos:", {
-      projectId,
-      description,
-      date,
-      image,
-      amount,
-      distribution,
-    });
-    // Verificar si el projectId está presente
+    console.log(req.body);
     if (!projectId) {
-      console.log("No se proporcionó el ID del proyecto");
       return res.status(400).json({
         msg: "El ID del proyecto es obligatorio.",
       });
     }
 
-    // Log para ver los datos que están llegando en la solicitud
-    console.log("Datos recibidos:", {
-      projectId,
-      description,
-      date,
-      image,
-      amount,
-      distribution,
-    });
-
-    // Buscar el proyecto en la base de datos y populamos los miembros
+    // Buscar el proyecto
     const project = await Project.findById(projectId).populate("members");
 
-    // Verificar si el proyecto existe
     if (!project) {
-      console.log("El proyecto no existe.");
       return res.status(404).json({
         msg: "El proyecto no existe.",
       });
     }
 
-    // Verificar si el usuario está asociado al proyecto
-    const userIsMember = project.members.some(
-      (member) => member._id.toString() === req.user.userId
-    );
+    const userIsAuthorized =
+      project.owner.toString() === req.user.userId ||
+      project.members.some((member) => member._id.toString() === req.user.userId);
 
-    if (!userIsMember) {
-      console.log("El usuario no pertenece al proyecto.");
+    if (!userIsAuthorized) {
       return res.status(403).json({
-        msg: "El usuario no pertenece a este proyecto.",
+        msg: "El usuario no tiene permiso para este proyecto.",
       });
     }
 
-    // Crear el ticket
-    const ticket = new Ticket({
-      uploader: req.user.userId, // Usamos el ID del usuario que sube el ticket
+    // Crear el ticket en la base de datos
+    const newTicket = await Ticket.create({
+      uploader: req.user.userId, // ID del usuario que crea el ticket
       projectId: projectId,
       description,
       date,
@@ -91,29 +65,20 @@ exports.createTicket = async (req, res) => {
       distribution,
     });
 
-    // Log para ver el objeto del ticket antes de guardarlo
-    console.log("Creando ticket:", ticket);
+    // Agregar el _id del ticket al arreglo de tickets del proyecto
+    project.tickets.push(newTicket._id);
 
-    // Guardar el ticket en la base de datos
-    const savedTicket = await ticket.save();
-
-    // Log para verificar que el ticket se guardó correctamente
-    console.log("Ticket guardado:", savedTicket);
-
-    // Asociar el ticket al proyecto
-    project.tickets.push(savedTicket._id);
+    // Guardar los cambios en el proyecto
     await project.save();
 
-    // Responder con el ticket creado
-    res.status(201).json({
+    return res.status(201).json({
       msg: "Ticket creado exitosamente.",
-      ticket: savedTicket,
+      ticket: newTicket,
     });
   } catch (error) {
-    // Log del error
-    console.error("Error al crear el ticket:", error);
-    res.status(500).json({
-      msg: "Error al crear el ticket.",
+    console.error("Error al crear el ticket:", error.message);
+    return res.status(500).json({
+      msg: "Hubo un error al procesar la solicitud.",
     });
   }
 };
