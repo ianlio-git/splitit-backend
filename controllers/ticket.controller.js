@@ -25,7 +25,7 @@ exports.createTicket = async (req, res) => {
         msg: "No se pudo encontrar el token del usuario autenticado.",
       });
     }
-    
+
     const { projectId, description, date, image, amount, distribution } =
       req.body;
     console.log(req.body);
@@ -46,7 +46,9 @@ exports.createTicket = async (req, res) => {
 
     const userIsAuthorized =
       project.owner.toString() === req.user.userId ||
-      project.members.some((member) => member._id.toString() === req.user.userId);
+      project.members.some(
+        (member) => member._id.toString() === req.user.userId
+      );
 
     if (!userIsAuthorized) {
       return res.status(403).json({
@@ -218,5 +220,25 @@ exports.getTickets = async (req, res) => {
     res.status(500).json({
       msg: "Error al obtener los tickets del proyecto.",
     });
+  }
+};
+
+const cloudinary = require("cloudinary").v2;
+
+// Configuración de Cloudinary
+cloudinary.config({
+  cloud_name: "djcz7sdvk", // Sustituir por tu cloud name
+  api_key:
+    "CLOUDINARY_URL=cloudinary://<your_api_key>:<your_api_secret>@djcz7sdvk", // Sustituir por tu API key
+  api_secret: "GNPPDA-qdldZZLnfdBQxFKqEig0", // Sustituir por tu API secret
+});
+
+// Función para subir la imagen
+const uploadImage = async (file) => {
+  try {
+    const result = await cloudinary.uploader.upload(file.path);
+    return result.url; // Devuelve la URL de la imagen
+  } catch (error) {
+    throw new Error("Error al subir la imagen a Cloudinary");
   }
 };

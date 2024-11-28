@@ -15,5 +15,7 @@ router.delete("/delete", auth, ticketController.deleteTicket);
 // Ruta para obtener todos los tickets de un proyecto
 router.post("/get-tikets", auth, ticketController.getTickets);
 
+router.post("/image", auth, ticketController.getTickets);
+
 // Aquí puedes agregar otras rutas de proyectos, como obtener proyectos, actualizar, eliminar, etc.
 module.exports = router;
