@@ -361,6 +361,33 @@ exports.addFriend = async (req, res) => {
     // Guardar el usuario actualizado
     await user.save();
 
+    // Contenido del correo para el amigo agregado
+    const emailContentToFriend = {
+      to: friend.email, // Correo del amigo agregado
+      from: "ianlionetti17@gmail.com", // Remitente (asegúrate de que este correo esté verificado en SendGrid)
+      subject: "¡Nuevo amigo agregado!",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+          <h2>¡Has sido agregado como amigo!</h2>
+          <p>Hola,</p>
+          <p>El usuario <strong>${user.name} ${user.lastname}</strong> (correo: ${user.email}) te ha agregado como amigo.</p>
+          <p>Si deseas agregarlo también, puedes enviarle una solicitud desde tu perfil.</p>
+          <p>Atentamente,<br>El equipo de Soporte</p>
+        </div>
+      `,
+    };
+
+    // Intentar enviar el correo al amigo agregado
+    try {
+      await sgMail.send(emailContentToFriend);
+      console.log("Correo enviado exitosamente al amigo agregado.");
+    } catch (error) {
+      console.error("Error al enviar el correo:", error.message);
+      return res
+        .status(500)
+        .json({ message: "Error al enviar el correo de notificación." });
+    }
+
     // Responder con un mensaje de éxito
     res.status(200).json({
       message: `Amigo ${name} agregado exitosamente`,
@@ -375,7 +402,6 @@ exports.addFriend = async (req, res) => {
     res.status(500).json({ message: "Error al agregar el amigo" });
   }
 };
-
 /**
  * Eliminar un amigo del usuario autenticado (requiere autenticación).
  * @param {Object} req - La solicitud HTTP.
