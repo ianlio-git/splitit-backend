@@ -28,6 +28,7 @@ exports.createProject = async (req, res) => {
       name,
       description,
       owner: req.user.userId, // El propietario es el usuario autenticado
+      members: [req.user.userId], // Agregamos al propietario como miembro inicial
     });
 
     // Guardamos el proyecto en la base de datos
@@ -45,6 +46,7 @@ exports.createProject = async (req, res) => {
         name: newProject.name,
         description: newProject.description,
         owner: newProject.owner,
+        members: newProject.members,
       },
     });
   } catch (err) {
