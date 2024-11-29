@@ -1,6 +1,3 @@
-¡Gracias por señalarlo! Aquí tienes el archivo `README.md` actualizado, que ahora incluye la carpeta `middleware` y el archivo `auth.js` para la autenticación del token JWT:
-
-````markdown
 # Gestión de Usuarios y Proyectos con Node.js
 
 Este proyecto implementa una API RESTful en Node.js para la gestión de usuarios y proyectos. Permite funciones de autenticación, registro, gestión de perfiles, y relaciones entre usuarios, como agregar amigos. La API también incluye la creación, administración y eliminación de proyectos.
@@ -25,6 +22,7 @@ Sigue estos pasos para instalar y ejecutar el proyecto:
    git clone https://github.com/tuusuario/nombre-del-repo.git
    cd nombre-del-repo
    ```
+
 ````
 
 2. Instala las dependencias:
@@ -47,168 +45,252 @@ Sigue estos pasos para instalar y ejecutar el proyecto:
 
 ## Endpoints
 
-### **Autenticación y Gestión de Usuarios**
+# API Documentation
 
-#### Registro de Usuario
+Este documento detalla las rutas disponibles para interactuar con la API, organizadas por módulos: **USERS**, **FRIENDS**, **PROJECTS**, y **TICKETS**.
 
-- **URL:** `/register`
-- **Método:** `POST`
-- **Cuerpo:**
-  ```json
-  {
-    "email": "usuario@example.com",
-    "password": "contraseña_segura",
-    "fullName": "Nombre Completo"
-  }
-  ```
-- **Respuestas:**
-  - **201:** Usuario registrado exitosamente.
-  - **400:** Usuario ya existe.
+---
 
-#### Inicio de Sesión
+## USERS
 
-- **URL:** `/login`
-- **Método:** `POST`
-- **Cuerpo:**
-  ```json
-  {
-    "email": "usuario@example.com",
-    "password": "contraseña_segura"
-  }
-  ```
-- **Respuestas:**
-  - **200:** Inicio de sesión exitoso (con token JWT).
-  - **401:** Credenciales inválidas.
+### 1. Obtener respuesta
+**GET**: `http://localhost:4000/api/users/response`
 
-#### Obtener Perfil
+---
 
-- **URL:** `/profile`
-- **Método:** `GET`
-- **Encabezado:** `x-auth-token: <token JWT>`
-- **Respuestas:**
-  - **200:** Datos del perfil del usuario.
-  - **404:** Usuario no encontrado.
+### 2. Obtener todos los usuarios
+**GET**: `http://localhost:4000/api/users/users`
 
-#### Actualizar Perfil
+---
 
-- **URL:** `/profile/update`
-- **Método:** `PUT`
-- **Encabezado:** `x-auth-token: <token JWT>`
-- **Cuerpo (al menos uno de los campos):**
-  ```json
-  {
-    "name": "Nuevo Nombre",
-    "email": "nuevo_email@example.com",
-    "password": "nueva_contraseña",
-    "photo": "url_de_la_foto"
-  }
-  ```
-- **Respuestas:**
-  - **200:** Perfil actualizado exitosamente.
-  - **400:** Datos inválidos o correo ya en uso.
+### 3. Iniciar sesión
+**POST**: `http://localhost:4000/api/users/login`
 
-#### Eliminar Usuario
+**Body**:
+```json
+{
+  "email": "prueba@ejemplo.com",
+  "password": "1234"
+}
 
-- **URL:** `/profile/delete`
-- **Método:** `DELETE`
-- **Encabezado:** `x-auth-token: <token JWT>`
-- **Cuerpo:**
-  ```json
-  {
-    "password": "contraseña_segura"
-  }
-  ```
-- **Respuestas:**
-  - **200:** Cuenta eliminada exitosamente.
-  - **400:** Contraseña incorrecta.
+4. Registrar usuario
 
-### **Gestión de Amigos**
+POST: http://localhost:4000/api/users/register
 
-#### Agregar Amigo
+Body:
 
-- **URL:** `/friends/add`
-- **Método:** `POST`
-- **Encabezado:** `x-auth-token: <token JWT>`
-- **Cuerpo:**
-  ```json
-  {
-    "email": "amigo@example.com",
-    "name": "Nombre Amigo"
-  }
-  ```
-- **Respuestas:**
-  - **200:** Amigo agregado exitosamente.
-  - **404:** Amigo no encontrado.
+{
+  "name": "usuario1",
+  "email": "usuario2@ejemplo.com",
+  "password": "1234"
+}
 
-### **Gestión de Proyectos**
+5. Ver perfil
 
-#### Crear Proyecto
+GET: http://localhost:4000/api/users/profile
 
-- **URL:** `/api/projects/create`
-- **Método:** `POST`
-- **Cuerpo:**
-  ```json
-  {
-    "name": "Nombre del proyecto",
-    "description": "Descripción del proyecto"
-  }
-  ```
-- **Respuestas:**
-  - **200:** Proyecto creado exitosamente.
+Header: x-auth-token: <token>
+6. Actualizar perfil
 
-#### Agregar Miembro a Proyecto
+PUT: http://localhost:4000/api/users/update
 
-- **URL:** `/api/projects/add-member`
-- **Método:** `POST`
-- **Cuerpo:**
-  ```json
-  {
-    "projectId": "id_del_proyecto",
-    "memberId": "id_del_miembro"
-  }
-  ```
-- **Respuestas:**
-  - **200:** Miembro agregado al proyecto.
+Header: x-auth-token: <token>
 
-#### Eliminar Miembro de Proyecto
+Body:
 
-- **URL:** `/api/projects/remove-member`
-- **Método:** `POST`
-- **Cuerpo:**
-  ```json
-  {
-    "projectId": "id_del_proyecto",
-    "memberId": "id_del_miembro"
-  }
-  ```
-- **Respuestas:**
-  - **200:** Miembro eliminado del proyecto.
+{
+  "name": "pablo",
+  "lastname": "pablo",
+  "email": "prueba@ejemplo.com",
+  "password": "1234",
+  "photo": "https://nuevoenlacefoto.com"
+}
 
-#### Obtener Detalles del Proyecto
+7. Eliminar usuario
 
-- **URL:** `/api/projects/details`
-- **Método:** `POST`
-- **Cuerpo:**
-  ```json
-  {
-    "projectId": "id_del_proyecto"
-  }
-  ```
-- **Respuestas:**
-  - **200:** Detalles del proyecto obtenidos correctamente.
+DELETE: http://localhost:4000/api/users/delete
 
-#### Obtener Todos los Proyectos de un Usuario
+Header: x-auth-token: <token>
 
-- **URL:** `/api/projects/all`
-- **Método:** `GET`
-- **Respuestas:**
-  - **200:** Lista de proyectos del usuario autenticado.
+Body:
 
-## Consideraciones
+{
+  "password": "1234"
+}
 
-- **Autenticación:** Se requiere un token JWT para acceder a los endpoints protegidos. Este se incluye en el encabezado `x-auth-token`.
-- **Middleware:** Se asume que existe un middleware que extrae el `userId` del token JWT.
+8. Enviar correo de restablecimiento
 
+POST: http://localhost:4000/api/users/reset
+
+Body:
+
+{
+  "email": "ianlionetti17@gmail.com"
+}
+
+9. Cambiar contraseña
+
+POST: http://localhost:4000/api/users/change-password
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "newPassword": "123456"
+}
+
+FRIENDS
+1. Mostrar amigos
+
+GET: http://localhost:4000/api/users/friends
+
+Header: x-auth-token: <token>
+2. Agregar amigo
+
+POST: http://localhost:4000/api/users/add-friend
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "email": "usuario2@ejemplo.com",
+  "name": "carlos"
+}
+
+3. Eliminar amigo
+
+POST: http://localhost:4000/api/users/remove-friend
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "email": "usuario2@ejemplo.com"
+}
+
+PROJECTS
+1. Obtener test de proyectos
+
+GET: http://localhost:4000/api/projects/test
+2. Crear proyecto
+
+POST: http://localhost:4000/api/projects/create
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "name": "Mi nuevo proyecto 2",
+  "description": "Descripción del proyecto 2"
+}
+
+3. Agregar miembro al proyecto
+
+POST: http://localhost:4000/api/projects/add-members
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "projectId": "674225d71fde707adbe6f7ee",
+  "memberId": "6741dad00c2a4ccd854ca415"
+}
+
+4. Obtener detalles de un proyecto (proyecto principal)
+
+POST: http://localhost:4000/api/projects/post-details
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "projectId": "674225d71fde707adbe6f7ee"
+}
+
+5. Mostrar todos los proyectos de la cuenta
+
+GET: http://localhost:4000/api/projects/get-all
+
+Header: x-auth-token: <token>
+6. Eliminar miembro de proyecto
+
+DELETE: http://localhost:4000/api/projects/delete-member
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "projectId": "674378116ed19c37bd4085c2",
+  "memberId": "6742b6b6af44843cfee9ffdb"
+}
+
+Nota: Solo el propietario del proyecto puede borrar miembros.
+7. Eliminar proyecto
+
+DELETE: http://localhost:4000/api/projects/delete-project
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "projectId": "674378116ed19c37bd4085c2"
+}
+
+Nota: Solo el propietario del proyecto puede eliminar el proyecto.
+TICKETS
+1. Test
+
+GET: http://localhost:4000/api/tickets/test
+
+Descripción: Prueba de ruta para verificar el funcionamiento de la API de tickets.
+2. Crear Ticket
+
+POST: http://localhost:4000/api/tickets/create
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "projectId": "ID_DEL_PROYECTO",
+  "description": "Descripción del ticket",
+  "date": "2024-11-24",
+  "image": "URL_DE_IMAGEN",
+  "amount": 1000,
+  "distribution": "Distribución de recursos"
+}
+
+3. Eliminar Ticket
+
+DELETE: http://localhost:4000/api/tickets/delete
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "ticketId": "ID_DEL_TICKET"
+}
+
+4. Obtener Tickets de un Proyecto
+
+POST: http://localhost:4000/api/tickets/get-tikets
+
+Header: x-auth-token: <token>
+
+Body:
+
+{
+  "projectId": "ID_DEL_PROYECTO"
+}
 ## Estructura del Proyecto
 
 ```
@@ -252,3 +334,4 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para má
 ### Mejora realizada:
 1. **Incorporación del archivo `auth.js`:** Añadí la carpeta `middleware` y el archivo `auth.js` para la autenticación JWT, donde se valida el token y se asegura que el `userId` esté disponible en `req.user`.
 ```
+````
