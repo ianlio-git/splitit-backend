@@ -1,17 +1,37 @@
-# Gestión de Usuarios y Proyectos con Node.js
+# API de Gestión de Usuarios, Proyectos y Tickets con Node.js
 
-Este proyecto implementa una API RESTful en Node.js para la gestión de usuarios y proyectos. Permite funciones de autenticación, registro, gestión de perfiles, y relaciones entre usuarios, como agregar amigos. La API también incluye la creación, administración y eliminación de proyectos.
+Este proyecto implementa una API RESTful en Node.js para la gestión de usuarios, proyectos y tickets. Permite funciones de autenticación, registro, gestión de perfiles, y relaciones entre usuarios, como agregar amigos. La API también incluye la creación, administración y eliminación de proyectos y tickets.
+
+## Dependencias
+
+- **bcryptjs**: Para el hash y la verificación de contraseñas.
+- **cloudinary**: Para subir y gestionar imágenes en Cloudinary.
+- **dotenv**: Para cargar variables de entorno desde un archivo `.env`.
+- **express**: Framework web para Node.js.
+- **jsonwebtoken**: Para generar y verificar tokens JWT.
+- **mongoose**: Para interactuar con la base de datos MongoDB.
+- **nodemailer**: Para enviar correos electrónicos.
+- **@sendgrid/mail**: Para enviar correos electrónicos usando SendGrid.
+
+## Dependencias de Desarrollo
+
+- **nodemon**: Para reiniciar automáticamente el servidor cuando se detectan cambios en los archivos.
 
 ## Requisitos Previos
 
 Antes de ejecutar este proyecto, asegúrate de tener instalados los siguientes programas:
 
-- [Node.js](https://nodejs.org/) (versión 14 o superior)
-- [MongoDB](https://www.mongodb.com/) (versión 4 o superior)
+- Node.js (versión 14 o superior)
+- MongoDB (versión 4 o superior)
 
 Además, necesitarás un archivo `.env` configurado con las siguientes variables:
 
-- `JWT_SECRET`: Clave secreta para firmar tokens JWT.
+- JWT_SECRET: Clave secreta para firmar tokens JWT.
+- SENDGRID_API_KEY: Clave API de SendGrid para enviar correos electrónicos.
+- FRONTEND_URL: URL del frontend para generar enlaces de reseteo de contraseña.
+- CLOUDINARY_CLOUD_NAME: Nombre de tu cuenta de Cloudinary.
+- CLOUDINARY_API_KEY: Clave API de Cloudinary.
+- CLOUDINARY_API_SECRET: Clave secreta de Cloudinary.
 
 ## Instalación
 
@@ -35,12 +55,31 @@ Sigue estos pasos para instalar y ejecutar el proyecto:
 
    ```env
    JWT_SECRET=tu_clave_secreta
+   SENDGRID_API_KEY=tu_clave_api_de_sendgrid
+   FRONTEND_URL=https://tuaplicacion.com
+   CLOUDINARY_CLOUD_NAME=tu_cloud_name
+   CLOUDINARY_API_KEY=tu_api_key
+   CLOUDINARY_API_SECRET=tu_api_secret
    ```
 
 4. Inicia el servidor:
    ```bash
    npm start
    ```
+
+---
+
+## Comentarios
+
+1. **Incorporación del archivo `auth.js`:** Se añadió la carpeta `middleware` y dentro de ella el archivo `auth.js`, el cual se encarga de la autenticación JWT. Este archivo tiene varias responsabilidades clave:
+
+   - **Validación del Token:** Verifica que el token JWT proporcionado en las solicitudes sea válido y no haya sido manipulado.
+   - **Duración del Token:** Asegura que el token tenga una duración de 1 hora, después de la cual expira y el usuario deberá autenticarse nuevamente.
+   - **Disponibilidad del `userId`:** Extrae el `userId` del token JWT y lo coloca en `req.user`, asegurando que esté disponible para su uso en las rutas protegidas. Esto permite que las rutas autenticadas puedan acceder fácilmente al ID del usuario autenticado sin necesidad de realizar consultas adicionales a la base de datos.
+
+   Este archivo es esencial para proteger las rutas de la API y garantizar que solo los usuarios autenticados puedan acceder a ellas.
+
+---
 
 ## Endpoints
 
@@ -336,6 +375,8 @@ Este documento detalla las rutas disponibles para interactuar con la API, organi
 
 ### TICKETS
 
+---
+
 ### 1. Test
 
 **GET**: `http://localhost:4000/api/tickets/test`
@@ -420,21 +461,6 @@ src/
 └── server.js                # Punto de entrada de la aplicación
 ```
 
-# Dependencias del Proyecto
-
-- **bcryptjs**: Para el hash y la verificación de contraseñas.
-- **cloudinary**: Para subir y gestionar imágenes en Cloudinary.
-- **dotenv**: Para cargar variables de entorno desde un archivo `.env`.
-- **express**: Framework web para Node.js.
-- **jsonwebtoken**: Para generar y verificar tokens JWT.
-- **mongoose**: Para interactuar con la base de datos MongoDB.
-- **nodemailer**: Para enviar correos electrónicos.
-- **@sendgrid/mail**: Para enviar correos electrónicos usando SendGrid.
-
-## Dependencias de Desarrollo
-
-- **nodemon**: Para reiniciar automáticamente el servidor cuando se detectan cambios en los archivos.
-
 ## Contribuciones
 
 1. Haz un fork del repositorio.
@@ -446,13 +472,3 @@ src/
 ## Licencia
 
 Este proyecto está bajo la es para uso educativo de `UADE`.
-
-### Mejora realizada:
-
-1. **Incorporación del archivo `auth.js`:** Se añadió la carpeta `middleware` y dentro de ella el archivo `auth.js`, el cual se encarga de la autenticación JWT. Este archivo tiene varias responsabilidades clave:
-
-   - **Validación del Token:** Verifica que el token JWT proporcionado en las solicitudes sea válido y no haya sido manipulado.
-   - **Duración del Token:** Asegura que el token tenga una duración de 1 hora, después de la cual expira y el usuario deberá autenticarse nuevamente.
-   - **Disponibilidad del `userId`:** Extrae el `userId` del token JWT y lo coloca en `req.user`, asegurando que esté disponible para su uso en las rutas protegidas. Esto permite que las rutas autenticadas puedan acceder fácilmente al ID del usuario autenticado sin necesidad de realizar consultas adicionales a la base de datos.
-
-   Este archivo es esencial para proteger las rutas de la API y garantizar que solo los usuarios autenticados puedan acceder a ellas.
