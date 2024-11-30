@@ -69,11 +69,14 @@ Este documento detalla las rutas disponibles para interactuar con la API, organi
 **POST**: `http://localhost:4000/api/users/login`
 
 **Body**:
+
+```
 json
 {
 "email": "prueba@ejemplo.com",
 "password": "1234"
 }
+```
 
 ### 4. Registrar usuario
 
@@ -81,11 +84,13 @@ json
 
 **Body**:
 
+```
 {
 "name": "usuario1",
 "email": "usuario2@ejemplo.com",
 "password": "1234"
 }
+```
 
 ### 5. Ver perfil
 
@@ -100,6 +105,8 @@ json
 **Header**: x-auth-token: <token>
 
 **Body**:
+
+```
 {
 "name": "pablo",
 "lastname": "pablo",
@@ -107,6 +114,7 @@ json
 "password": "1234",
 "photo": "https://nuevoenlacefoto.com"
 }
+```
 
 ### 7. Eliminar usuario
 
@@ -115,9 +123,12 @@ json
 **Header**: x-auth-token: <token>
 
 **Body**:
+
+```
 {
 "password": "1234"
 }
+```
 
 ### 8. Enviar correo de restablecimiento
 
@@ -125,9 +136,11 @@ json
 
 **Body**:
 
+```
 {
 "email": "ianlionetti17@gmail.com"
 }
+```
 
 ### 9. Cambiar contraseña
 
@@ -137,9 +150,11 @@ POST: http://localhost:4000/api/users/change-password
 
 **Body**:
 
+```
 {
 "newPassword": "123456"
 }
+```
 
 ### FRIENDS
 
@@ -157,10 +172,12 @@ POST: http://localhost:4000/api/users/change-password
 
 **Body**:
 
+```
 {
 "email": "usuario2@ejemplo.com",
 "name": "carlos"
 }
+```
 
 ### 3. Eliminar amigo
 
@@ -170,9 +187,11 @@ POST: http://localhost:4000/api/users/change-password
 
 **Body**:
 
+```
 {
 "email": "usuario2@ejemplo.com"
 }
+```
 
 ### PROJECTS
 
@@ -188,10 +207,12 @@ POST: http://localhost:4000/api/users/change-password
 
 **Body**:
 
+```
 {
 "name": "Mi nuevo proyecto 2",
 "description": "Descripción del proyecto 2"
 }
+```
 
 ### 3. Agregar miembro al proyecto
 
@@ -201,10 +222,12 @@ POST: http://localhost:4000/api/users/change-password
 
 **Body**:
 
+```
 {
 "projectId": "674225d71fde707adbe6f7ee",
 "memberId": "6741dad00c2a4ccd854ca415"
 }
+```
 
 ### 4. Obtener detalles de un proyecto (proyecto principal)
 
@@ -214,9 +237,11 @@ POST: http://localhost:4000/api/users/change-password
 
 **Body**:
 
+```
 {
 "projectId": "674225d71fde707adbe6f7ee"
 }
+```
 
 ### 5. Mostrar todos los proyectos de la cuenta
 
@@ -232,10 +257,12 @@ DELETE: http://localhost:4000/api/projects/delete-member
 
 **Body**:
 
+```
 {
 "projectId": "674378116ed19c37bd4085c2",
 "memberId": "6742b6b6af44843cfee9ffdb"
 }
+```
 
 `Nota: Solo el propietario del proyecto puede borrar miembros.`
 
@@ -247,9 +274,11 @@ DELETE: http://localhost:4000/api/projects/delete-member
 
 **Body**:
 
+```
 {
 "projectId": "674378116ed19c37bd4085c2"
 }
+```
 
 `Nota: Solo el propietario del proyecto puede eliminar el proyecto.`
 
@@ -259,7 +288,7 @@ DELETE: http://localhost:4000/api/projects/delete-member
 
 **GET**: http://localhost:4000/api/tickets/test
 
-Descripción: Prueba de ruta para verificar el funcionamiento de la API de tickets.
+`Descripción: Prueba de ruta para verificar el funcionamiento de la API de tickets.`
 
 ### 2. Crear Ticket
 
@@ -269,6 +298,7 @@ Descripción: Prueba de ruta para verificar el funcionamiento de la API de ticke
 
 **Body**:
 
+```
 {
 "projectId": "ID_DEL_PROYECTO",
 "description": "Descripción del ticket",
@@ -277,6 +307,7 @@ Descripción: Prueba de ruta para verificar el funcionamiento de la API de ticke
 "amount": 1000,
 "distribution": "Distribución de recursos"
 }
+```
 
 ### 3. Eliminar Ticket
 
@@ -286,9 +317,11 @@ Descripción: Prueba de ruta para verificar el funcionamiento de la API de ticke
 
 **Body**:
 
+```
 {
 "ticketId": "ID_DEL_TICKET"
 }
+```
 
 ### 4. Obtener Tickets de un Proyecto
 
@@ -298,9 +331,11 @@ Descripción: Prueba de ruta para verificar el funcionamiento de la API de ticke
 
 **Body**:
 
+```
 {
 "projectId": "ID_DEL_PROYECTO"
 }
+```
 
 ## Estructura del Proyecto
 
