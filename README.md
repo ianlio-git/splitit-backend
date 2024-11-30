@@ -20,8 +20,8 @@ Sigue estos pasos para instalar y ejecutar el proyecto:
 1. Clona el repositorio en tu máquina local:
 
    ```bash
-   git clone https://github.com/tuusuario/nombre-del-repo.git
-   cd nombre-del-repo
+   git clone `https://github.com/ianlio-git/splitit-backend.git`
+   cd splitit-backend
    ```
 
 2. Instala las dependencias:
@@ -420,11 +420,20 @@ src/
 └── server.js                # Punto de entrada de la aplicación
 ```
 
-## Dependencias
+# Dependencias del Proyecto
 
-- **bcryptjs:** Para el hash y la verificación de contraseñas.
-- **jsonwebtoken:** Para generar y verificar tokens JWT.
-- **mongoose:** Para interactuar con la base de datos MongoDB.
+- **bcryptjs**: Para el hash y la verificación de contraseñas.
+- **cloudinary**: Para subir y gestionar imágenes en Cloudinary.
+- **dotenv**: Para cargar variables de entorno desde un archivo `.env`.
+- **express**: Framework web para Node.js.
+- **jsonwebtoken**: Para generar y verificar tokens JWT.
+- **mongoose**: Para interactuar con la base de datos MongoDB.
+- **nodemailer**: Para enviar correos electrónicos.
+- **@sendgrid/mail**: Para enviar correos electrónicos usando SendGrid.
+
+## Dependencias de Desarrollo
+
+- **nodemon**: Para reiniciar automáticamente el servidor cuando se detectan cambios en los archivos.
 
 ## Contribuciones
 
@@ -436,8 +445,14 @@ src/
 
 ## Licencia
 
-Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la es para uso educativo de `UADE`.
 
 ### Mejora realizada:
 
-1. **Incorporación del archivo `auth.js`:** Añadí la carpeta `middleware` y el archivo `auth.js` para la autenticación JWT, donde se valida el token y se asegura que el `userId` esté disponible en `req.user`.
+1. **Incorporación del archivo `auth.js`:** Se añadió la carpeta `middleware` y dentro de ella el archivo `auth.js`, el cual se encarga de la autenticación JWT. Este archivo tiene varias responsabilidades clave:
+
+   - **Validación del Token:** Verifica que el token JWT proporcionado en las solicitudes sea válido y no haya sido manipulado.
+   - **Duración del Token:** Asegura que el token tenga una duración de 1 hora, después de la cual expira y el usuario deberá autenticarse nuevamente.
+   - **Disponibilidad del `userId`:** Extrae el `userId` del token JWT y lo coloca en `req.user`, asegurando que esté disponible para su uso en las rutas protegidas. Esto permite que las rutas autenticadas puedan acceder fácilmente al ID del usuario autenticado sin necesidad de realizar consultas adicionales a la base de datos.
+
+   Este archivo es esencial para proteger las rutas de la API y garantizar que solo los usuarios autenticados puedan acceder a ellas.
