@@ -18,12 +18,11 @@ Además, necesitarás un archivo `.env` configurado con las siguientes variables
 Sigue estos pasos para instalar y ejecutar el proyecto:
 
 1. Clona el repositorio en tu máquina local:
+
    ```bash
    git clone https://github.com/tuusuario/nombre-del-repo.git
    cd nombre-del-repo
    ```
-
-````
 
 2. Instala las dependencias:
 
@@ -54,243 +53,255 @@ Este documento detalla las rutas disponibles para interactuar con la API, organi
 ## USERS
 
 ### 1. Obtener respuesta
+
 **GET**: `http://localhost:4000/api/users/response`
 
 ---
 
 ### 2. Obtener todos los usuarios
+
 **GET**: `http://localhost:4000/api/users/users`
 
 ---
 
 ### 3. Iniciar sesión
+
 **POST**: `http://localhost:4000/api/users/login`
 
 **Body**:
-```json
+json
 {
-  "email": "prueba@ejemplo.com",
-  "password": "1234"
+"email": "prueba@ejemplo.com",
+"password": "1234"
 }
 
-4. Registrar usuario
+### 4. Registrar usuario
 
-POST: http://localhost:4000/api/users/register
+**POST**: http://localhost:4000/api/users/register
 
-Body:
-
-{
-  "name": "usuario1",
-  "email": "usuario2@ejemplo.com",
-  "password": "1234"
-}
-
-5. Ver perfil
-
-GET: http://localhost:4000/api/users/profile
-
-Header: x-auth-token: <token>
-6. Actualizar perfil
-
-PUT: http://localhost:4000/api/users/update
-
-Header: x-auth-token: <token>
-
-Body:
+**Body**:
 
 {
-  "name": "pablo",
-  "lastname": "pablo",
-  "email": "prueba@ejemplo.com",
-  "password": "1234",
-  "photo": "https://nuevoenlacefoto.com"
+"name": "usuario1",
+"email": "usuario2@ejemplo.com",
+"password": "1234"
 }
 
-7. Eliminar usuario
+### 5. Ver perfil
 
-DELETE: http://localhost:4000/api/users/delete
+**GET**: http://localhost:4000/api/users/profile
 
-Header: x-auth-token: <token>
+**Header**: x-auth-token: <token>
 
-Body:
+### 6. Actualizar perfil
+
+**PUT**: http://localhost:4000/api/users/update
+
+**Header**: x-auth-token: <token>
+
+**Body**:
+{
+"name": "pablo",
+"lastname": "pablo",
+"email": "prueba@ejemplo.com",
+"password": "1234",
+"photo": "https://nuevoenlacefoto.com"
+}
+
+### 7. Eliminar usuario
+
+**DELETE**: http://localhost:4000/api/users/delete
+
+**Header**: x-auth-token: <token>
+
+**Body**:
+{
+"password": "1234"
+}
+
+### 8. Enviar correo de restablecimiento
+
+**POST**: http://localhost:4000/api/users/reset
+
+**Body**:
 
 {
-  "password": "1234"
+"email": "ianlionetti17@gmail.com"
 }
 
-8. Enviar correo de restablecimiento
-
-POST: http://localhost:4000/api/users/reset
-
-Body:
-
-{
-  "email": "ianlionetti17@gmail.com"
-}
-
-9. Cambiar contraseña
+### 9. Cambiar contraseña
 
 POST: http://localhost:4000/api/users/change-password
 
-Header: x-auth-token: <token>
+**Header**: x-auth-token: <token>
 
-Body:
-
-{
-  "newPassword": "123456"
-}
-
-FRIENDS
-1. Mostrar amigos
-
-GET: http://localhost:4000/api/users/friends
-
-Header: x-auth-token: <token>
-2. Agregar amigo
-
-POST: http://localhost:4000/api/users/add-friend
-
-Header: x-auth-token: <token>
-
-Body:
+**Body**:
 
 {
-  "email": "usuario2@ejemplo.com",
-  "name": "carlos"
+"newPassword": "123456"
 }
 
-3. Eliminar amigo
+### FRIENDS
 
-POST: http://localhost:4000/api/users/remove-friend
+### 1. Mostrar amigos
 
-Header: x-auth-token: <token>
+**GET**: http://localhost:4000/api/users/friends
 
-Body:
+**Header**: x-auth-token: <token>
+
+### 2. Agregar amigo
+
+**POST**: http://localhost:4000/api/users/add-friend
+
+**Header**: x-auth-token: <token>
+
+**Body**:
 
 {
-  "email": "usuario2@ejemplo.com"
+"email": "usuario2@ejemplo.com",
+"name": "carlos"
 }
 
-PROJECTS
-1. Obtener test de proyectos
+### 3. Eliminar amigo
 
-GET: http://localhost:4000/api/projects/test
-2. Crear proyecto
+**POST**: http://localhost:4000/api/users/remove-friend
 
-POST: http://localhost:4000/api/projects/create
+**Header**: x-auth-token: <token>
 
-Header: x-auth-token: <token>
-
-Body:
+**Body**:
 
 {
-  "name": "Mi nuevo proyecto 2",
-  "description": "Descripción del proyecto 2"
+"email": "usuario2@ejemplo.com"
 }
 
-3. Agregar miembro al proyecto
+### PROJECTS
 
-POST: http://localhost:4000/api/projects/add-members
+### 1. Obtener test de proyectos
 
-Header: x-auth-token: <token>
+**GET**: http://localhost:4000/api/projects/test
 
-Body:
+### 2. Crear proyecto
+
+**POST**: http://localhost:4000/api/projects/create
+
+**Header**: x-auth-token: <token>
+
+**Body**:
 
 {
-  "projectId": "674225d71fde707adbe6f7ee",
-  "memberId": "6741dad00c2a4ccd854ca415"
+"name": "Mi nuevo proyecto 2",
+"description": "Descripción del proyecto 2"
 }
 
-4. Obtener detalles de un proyecto (proyecto principal)
+### 3. Agregar miembro al proyecto
 
-POST: http://localhost:4000/api/projects/post-details
+**POST**: http://localhost:4000/api/projects/add-members
 
-Header: x-auth-token: <token>
+**Header**: x-auth-token: <token>
 
-Body:
+**Body**:
 
 {
-  "projectId": "674225d71fde707adbe6f7ee"
+"projectId": "674225d71fde707adbe6f7ee",
+"memberId": "6741dad00c2a4ccd854ca415"
 }
 
-5. Mostrar todos los proyectos de la cuenta
+### 4. Obtener detalles de un proyecto (proyecto principal)
 
-GET: http://localhost:4000/api/projects/get-all
+**POST**: http://localhost:4000/api/projects/post-details
 
-Header: x-auth-token: <token>
-6. Eliminar miembro de proyecto
+**Header**: x-auth-token: <token>
+
+**Body**:
+
+{
+"projectId": "674225d71fde707adbe6f7ee"
+}
+
+### 5. Mostrar todos los proyectos de la cuenta
+
+**GET**: http://localhost:4000/api/projects/get-all
+
+**Header**: x-auth-token: <token>
+
+### 6. Eliminar miembro de proyecto
 
 DELETE: http://localhost:4000/api/projects/delete-member
 
-Header: x-auth-token: <token>
+**Header**: x-auth-token: <token>
 
-Body:
-
-{
-  "projectId": "674378116ed19c37bd4085c2",
-  "memberId": "6742b6b6af44843cfee9ffdb"
-}
-
-Nota: Solo el propietario del proyecto puede borrar miembros.
-7. Eliminar proyecto
-
-DELETE: http://localhost:4000/api/projects/delete-project
-
-Header: x-auth-token: <token>
-
-Body:
+**Body**:
 
 {
-  "projectId": "674378116ed19c37bd4085c2"
+"projectId": "674378116ed19c37bd4085c2",
+"memberId": "6742b6b6af44843cfee9ffdb"
 }
 
-Nota: Solo el propietario del proyecto puede eliminar el proyecto.
-TICKETS
-1. Test
+`Nota: Solo el propietario del proyecto puede borrar miembros.`
 
-GET: http://localhost:4000/api/tickets/test
+### 7. Eliminar proyecto
+
+**DELETE**: http://localhost:4000/api/projects/delete-project
+
+**Header**: x-auth-token: <token>
+
+**Body**:
+
+{
+"projectId": "674378116ed19c37bd4085c2"
+}
+
+`Nota: Solo el propietario del proyecto puede eliminar el proyecto.`
+
+### TICKETS
+
+### 1. Test
+
+**GET**: http://localhost:4000/api/tickets/test
 
 Descripción: Prueba de ruta para verificar el funcionamiento de la API de tickets.
-2. Crear Ticket
 
-POST: http://localhost:4000/api/tickets/create
+### 2. Crear Ticket
 
-Header: x-auth-token: <token>
+**POST**: http://localhost:4000/api/tickets/create
 
-Body:
+**Header**: x-auth-token: <token>
 
-{
-  "projectId": "ID_DEL_PROYECTO",
-  "description": "Descripción del ticket",
-  "date": "2024-11-24",
-  "image": "URL_DE_IMAGEN",
-  "amount": 1000,
-  "distribution": "Distribución de recursos"
-}
-
-3. Eliminar Ticket
-
-DELETE: http://localhost:4000/api/tickets/delete
-
-Header: x-auth-token: <token>
-
-Body:
+**Body**:
 
 {
-  "ticketId": "ID_DEL_TICKET"
+"projectId": "ID_DEL_PROYECTO",
+"description": "Descripción del ticket",
+"date": "2024-11-24",
+"image": "URL_DE_IMAGEN",
+"amount": 1000,
+"distribution": "Distribución de recursos"
 }
 
-4. Obtener Tickets de un Proyecto
+### 3. Eliminar Ticket
 
-POST: http://localhost:4000/api/tickets/get-tikets
+**DELETE**: http://localhost:4000/api/tickets/delete
 
-Header: x-auth-token: <token>
+**Header**: x-auth-token: <token>
 
-Body:
+**Body**:
 
 {
-  "projectId": "ID_DEL_PROYECTO"
+"ticketId": "ID_DEL_TICKET"
 }
+
+### 4. Obtener Tickets de un Proyecto
+
+**POST**: http://localhost:4000/api/tickets/get-tikets
+
+**Header**: x-auth-token: <token>
+
+**Body**:
+
+{
+"projectId": "ID_DEL_PROYECTO"
+}
+
 ## Estructura del Proyecto
 
 ```
@@ -329,9 +340,6 @@ src/
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
 
-```
-
 ### Mejora realizada:
+
 1. **Incorporación del archivo `auth.js`:** Añadí la carpeta `middleware` y el archivo `auth.js` para la autenticación JWT, donde se valida el token y se asegura que el `userId` esté disponible en `req.user`.
-```
-````
