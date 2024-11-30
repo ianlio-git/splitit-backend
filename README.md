@@ -69,20 +69,23 @@ Este documento detalla las rutas disponibles para interactuar con la API, organi
 **POST**: `http://localhost:4000/api/users/login`
 
 **Body**:
+.json
 
 ```
-json
 {
 "email": "prueba@ejemplo.com",
 "password": "1234"
 }
 ```
 
+---
+
 ### 4. Registrar usuario
 
-**POST**: http://localhost:4000/api/users/register
+**POST**:`http://localhost:4000/api/users/register`
 
 **Body**:
+.json
 
 ```
 {
@@ -92,19 +95,24 @@ json
 }
 ```
 
+---
+
 ### 5. Ver perfil
 
-**GET**: http://localhost:4000/api/users/profile
+**GET**: `http://localhost:4000/api/users/profile`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
+
+---
 
 ### 6. Actualizar perfil
 
-**PUT**: http://localhost:4000/api/users/update
+**PUT**: `http://localhost:4000/api/users/update`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -116,13 +124,16 @@ json
 }
 ```
 
+---
+
 ### 7. Eliminar usuario
 
-**DELETE**: http://localhost:4000/api/users/delete
+**DELETE**: `http://localhost:4000/api/users/delete`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -130,11 +141,14 @@ json
 }
 ```
 
+---
+
 ### 8. Enviar correo de restablecimiento
 
-**POST**: http://localhost:4000/api/users/reset
+**POST**: `http://localhost:4000/api/users/reset`
 
 **Body**:
+.json
 
 ```
 {
@@ -142,13 +156,16 @@ json
 }
 ```
 
+---
+
 ### 9. Cambiar contraseña
 
-POST: http://localhost:4000/api/users/change-password
+**POST**: `http://localhost:4000/api/users/change-password`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -156,21 +173,28 @@ POST: http://localhost:4000/api/users/change-password
 }
 ```
 
+---
+
 ### FRIENDS
+
+---
 
 ### 1. Mostrar amigos
 
-**GET**: http://localhost:4000/api/users/friends
+**GET**: `http://localhost:4000/api/users/friends`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
+
+---
 
 ### 2. Agregar amigo
 
-**POST**: http://localhost:4000/api/users/add-friend
+**POST**: `http://localhost:4000/api/users/add-friend`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -179,13 +203,16 @@ POST: http://localhost:4000/api/users/change-password
 }
 ```
 
+---
+
 ### 3. Eliminar amigo
 
-**POST**: http://localhost:4000/api/users/remove-friend
+**POST**: `http://localhost:4000/api/users/remove-friend`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -193,19 +220,26 @@ POST: http://localhost:4000/api/users/change-password
 }
 ```
 
+---
+
 ### PROJECTS
+
+---
 
 ### 1. Obtener test de proyectos
 
-**GET**: http://localhost:4000/api/projects/test
+**GET**: `http://localhost:4000/api/projects/test`
+
+---
 
 ### 2. Crear proyecto
 
-**POST**: http://localhost:4000/api/projects/create
+**POST**: `http://localhost:4000/api/projects/create`
 
 **Header**: x-auth-token: <token>
 
 **Body**:
+.json
 
 ```
 {
@@ -214,13 +248,16 @@ POST: http://localhost:4000/api/users/change-password
 }
 ```
 
+---
+
 ### 3. Agregar miembro al proyecto
 
-**POST**: http://localhost:4000/api/projects/add-members
+**POST**: `http://localhost:4000/api/projects/add-members`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -229,13 +266,16 @@ POST: http://localhost:4000/api/users/change-password
 }
 ```
 
+---
+
 ### 4. Obtener detalles de un proyecto (proyecto principal)
 
-**POST**: http://localhost:4000/api/projects/post-details
+**POST**: `http://localhost:4000/api/projects/post-details`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -243,19 +283,24 @@ POST: http://localhost:4000/api/users/change-password
 }
 ```
 
+---
+
 ### 5. Mostrar todos los proyectos de la cuenta
 
-**GET**: http://localhost:4000/api/projects/get-all
+**GET**: `http://localhost:4000/api/projects/get-all`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
+
+---
 
 ### 6. Eliminar miembro de proyecto
 
-DELETE: http://localhost:4000/api/projects/delete-member
+**DELETE**: `http://localhost:4000/api/projects/delete-member`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -266,13 +311,16 @@ DELETE: http://localhost:4000/api/projects/delete-member
 
 `Nota: Solo el propietario del proyecto puede borrar miembros.`
 
+---
+
 ### 7. Eliminar proyecto
 
-**DELETE**: http://localhost:4000/api/projects/delete-project
+**DELETE**: `http://localhost:4000/api/projects/delete-project`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -280,23 +328,30 @@ DELETE: http://localhost:4000/api/projects/delete-member
 }
 ```
 
+---
+
 `Nota: Solo el propietario del proyecto puede eliminar el proyecto.`
+
+---
 
 ### TICKETS
 
 ### 1. Test
 
-**GET**: http://localhost:4000/api/tickets/test
+**GET**: `http://localhost:4000/api/tickets/test`
 
 `Descripción: Prueba de ruta para verificar el funcionamiento de la API de tickets.`
 
+---
+
 ### 2. Crear Ticket
 
-**POST**: http://localhost:4000/api/tickets/create
+**POST**: `http://localhost:4000/api/tickets/create`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -309,13 +364,16 @@ DELETE: http://localhost:4000/api/projects/delete-member
 }
 ```
 
+---
+
 ### 3. Eliminar Ticket
 
-**DELETE**: http://localhost:4000/api/tickets/delete
+**DELETE**: `http://localhost:4000/api/tickets/delete`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
@@ -323,19 +381,24 @@ DELETE: http://localhost:4000/api/projects/delete-member
 }
 ```
 
+---
+
 ### 4. Obtener Tickets de un Proyecto
 
-**POST**: http://localhost:4000/api/tickets/get-tikets
+**POST**: `http://localhost:4000/api/tickets/get-tikets`
 
-**Header**: x-auth-token: <token>
+**Header**: `x-auth-token: <token>`
 
 **Body**:
+.json
 
 ```
 {
 "projectId": "ID_DEL_PROYECTO"
 }
 ```
+
+---
 
 ## Estructura del Proyecto
 
